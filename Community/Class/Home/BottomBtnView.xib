@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6254" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="Ug2-8q-BO8" customClass="BottomBtnView">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="45"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="r7j-hn-t3O">
+                    <rect key="frame" x="60" y="0.0" width="60" height="45"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <state key="normal" title="我要参加">
+                        <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                </button>
+                <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YUW-K4-jtN">
+                    <rect key="frame" x="140" y="0.0" width="60" height="45"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <state key="normal" title="参与讨论">
+                        <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                </button>
+                <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="参加.png" translatesAutoresizingMaskIntoConstraints="NO" id="0c0-s9-VqE">
+                    <rect key="frame" x="40" y="13" width="19" height="19"/>
+                </imageView>
+                <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="讨论.png" translatesAutoresizingMaskIntoConstraints="NO" id="qVp-Ct-O5d">
+                    <rect key="frame" x="120" y="13" width="19" height="19"/>
+                </imageView>
+                <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="讨论.png" translatesAutoresizingMaskIntoConstraints="NO" id="2xf-8O-7L0">
+                    <rect key="frame" x="200" y="13" width="19" height="19"/>
+                </imageView>
+                <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Lxd-ci-Jsl">
+                    <rect key="frame" x="220" y="0.0" width="60" height="45"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <state key="normal" title="参与讨论">
+                        <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                </button>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="canjiaBtn" destination="r7j-hn-t3O" id="RRu-sK-tId"/>
+                <outlet property="canjiaImage" destination="0c0-s9-VqE" id="aiQ-eA-Yoi"/>
+                <outlet property="fenxiangBtn" destination="YUW-K4-jtN" id="RhY-iA-U4Z"/>
+                <outlet property="fenxiangImage" destination="qVp-Ct-O5d" id="yEi-tp-EKX"/>
+                <outlet property="taolunBtn" destination="Lxd-ci-Jsl" id="9bb-t4-2Mh"/>
+                <outlet property="taolunImage" destination="2xf-8O-7L0" id="ccc-mh-OBi"/>
+            </connections>
+            <point key="canvasLocation" x="231" y="338.5"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="参加.png" width="38" height="38"/>
+        <image name="讨论.png" width="38" height="38"/>
+    </resources>
+</document>

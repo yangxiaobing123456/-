@@ -1,0 +1,13 @@
+//
+//  BottomBtnView.h
+//  Community
+//
+//  Created by HuaMen on 15-2-12.
+//  Copyright (c) 2015年 Hua Men. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+@interface BottomBtnView : UIView
+
+@end

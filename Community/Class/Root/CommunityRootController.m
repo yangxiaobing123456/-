@@ -1,0 +1,115 @@
+//
+//  CommunityRootController.m
+//  Community
+//
+//  Created by SYZ on 13-11-26.
+//  Copyright (c) 2013年 Hua Men. All rights reserved.
+//
+
+#import "CommunityRootController.h"
+#import "CommunityHomeController.h"
+#import "WYFWController.h"
+#import "ZZFWController.h"
+#import "PersonalInfoController.h"
+#import "CommunityMoreController.h"
+
+@interface CommunityRootController ()
+
+@end
+
+@implementation CommunityRootController
+
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        
+    }
+    return self;
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    
+    //物业服务
+    WYFWController *wyfwController = [WYFWController new];
+    CommunityNavigationController *wyfwNav = [[CommunityNavigationController alloc] initWithRootViewController:wyfwController];
+    
+    //增值服务
+    ZZFWController *zzfwController = [ZZFWController new];
+    CommunityNavigationController *zzfwNav = [[CommunityNavigationController alloc] initWithRootViewController:zzfwController];
+    
+    //首页
+    CommunityHomeController *homeController = [CommunityHomeController new];
+    CommunityNavigationController *homeNav = [[CommunityNavigationController alloc] initWithRootViewController:homeController];
+    
+    //个人信息
+    PersonalInfoController *personalController = [PersonalInfoController new];
+    CommunityNavigationController *personalNav = [[CommunityNavigationController alloc] initWithRootViewController:personalController];
+    
+    //更多
+    CommunityMoreController *moreController = [CommunityMoreController new];
+    CommunityNavigationController *moreNav = [[CommunityNavigationController alloc] initWithRootViewController:moreController];
+    
+    self.viewControllers = [NSArray arrayWithObjects:wyfwNav, zzfwNav, homeNav, personalNav, moreNav, nil];
+    [self setSelectedIndex:2];
+    if (iOS7) {
+        [self.tabBar setBackgroundImage:[UIImage imageNamed:@"tabbar_49"]];
+    } else {
+        [self.tabBar setBackgroundImage:[UIImage imageNamed:@"tabbar_ios6_49"]];
+    }
+    
+    UITabBar *tabBar = self.tabBar;
+    UITabBarItem *tabBarItem0 = [tabBar.items objectAtIndex:0];
+    UITabBarItem *tabBarItem1 = [tabBar.items objectAtIndex:1];
+    UITabBarItem *tabBarItem2 = [tabBar.items objectAtIndex:2];
+    UITabBarItem *tabBarItem3 = [tabBar.items objectAtIndex:3];
+    UITabBarItem *tabBarItem4 = [tabBar.items objectAtIndex:4];
+    
+    tabBarItem0.title = @"物业服务";
+    tabBarItem1.title = @"增值服务";
+    tabBarItem2.title = @"益社区";
+    tabBarItem3.title = @"个人中心";
+    tabBarItem4.title = @"更多";
+    
+    [tabBarItem0 setFinishedSelectedImage:[UIImage imageNamed:@"newicon_05"] withFinishedUnselectedImage:[UIImage imageNamed:@"未标题-2_20"]];
+    [tabBarItem1 setFinishedSelectedImage:[UIImage imageNamed:@"newicon_03"] withFinishedUnselectedImage:[UIImage imageNamed:@"未标题-2_19"]];
+    [tabBarItem2 setFinishedSelectedImage:[UIImage imageNamed:@"newicon_12"] withFinishedUnselectedImage:[UIImage imageNamed:@"未标题-2_23"]];
+    [tabBarItem3 setFinishedSelectedImage:[UIImage imageNamed:@"newicon_07"] withFinishedUnselectedImage:[UIImage imageNamed:@"未标题-2_21"]];
+    [tabBarItem4 setFinishedSelectedImage:[UIImage imageNamed:@"newicon_09"] withFinishedUnselectedImage:[UIImage imageNamed:@"未标题-2_22"]];
+    //设置底部tapbar的属性
+    [[UITabBar appearance] setSelectionIndicatorImage:nil];
+    [[UITabBar appearance]setTintColor:[UIColor orangeColor]];
+    [[UITabBarItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                                                       [UIColor lightGrayColor], UITextAttributeTextColor,
+                                                       [UIFont systemFontOfSize:12.0f], UITextAttributeFont,
+                                                       nil] forState:UIControlStateNormal];
+    [[UITabBarItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                                                       [UIColor orangeColor], UITextAttributeTextColor,
+                                                       [UIFont systemFontOfSize:12.0f], UITextAttributeFont,
+                                                       nil] forState:UIControlStateHighlighted];
+    
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    if ([AppSetting appVersion] == nil ||
+        ![[AppSetting appVersion] isEqualToString:[[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleVersionKey]]) {
+        [AppSetting saveAppCheckUpdate:YES];
+        GuideController *controller = [GuideController new];
+        [self presentViewController:controller animated:NO completion:nil];
+        [AppSetting saveAppVersion:[[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleVersionKey]];
+        return;
+    }
+}
+
+@end

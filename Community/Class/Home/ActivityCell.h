@@ -1,0 +1,26 @@
+//
+//  ActivityCell.h
+//  Community
+//
+//  Created by HuaMen on 14-12-22.
+//  Copyright (c) 2014年 Hua Men. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+@interface ActivityCell : UITableViewCell
+@property (weak, nonatomic) IBOutlet UIImageView *TitleImage;
+@property (weak, nonatomic) IBOutlet UILabel *TitleLabel;
+@property (weak, nonatomic) IBOutlet UILabel *addLabel;
+@property (weak, nonatomic) IBOutlet UILabel *timeLabel;
+@property (weak, nonatomic) IBOutlet UILabel *TelLabel;
+@property (weak, nonatomic) IBOutlet UILabel *UserLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *IsStartImage;
+
+@property (strong, nonatomic) IBOutlet UIButton *hotBtn;
+@property (strong, nonatomic) IBOutlet UIButton *freeBtn;
+@property (strong, nonatomic) IBOutlet UIButton *todayBtn;
+
+@property (strong, nonatomic) IBOutlet UIImageView *headerbg;
+
+@end

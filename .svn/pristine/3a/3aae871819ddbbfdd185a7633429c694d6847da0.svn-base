@@ -1,0 +1,19 @@
+//
+//  GetJoinNumViewController.h
+//  Community
+//
+//  Created by HuaMen on 15-2-27.
+//  Copyright (c) 2015年 Hua Men. All rights reserved.
+//
+
+#import "CommunityViewController.h"
+
+@interface GetJoinNumViewController : CommunityViewController<UITableViewDataSource,UITableViewDelegate>
+{
+    UITableView *peopleTable;
+    NSArray *dataListArray;
+}
+
+@property (nonatomic,copy)NSString *activityId;
+
+@end

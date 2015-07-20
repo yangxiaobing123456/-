@@ -1,0 +1,87 @@
+//
+//  ActivityDetailViewController.h
+//  Community
+//
+//  Created by HuaMen on 14-12-29.
+//  Copyright (c) 2014年 Hua Men. All rights reserved.
+//
+
+#import "CommunityViewController.h"
+#import "PeopleNumTableViewCell.h"
+#import "JoinTableViewCell.h"
+
+#import "DianZanTableViewCell.h"
+//已经废弃
+//#import "PinglunTableViewCell.h"
+//#import "TalkTableViewCell.h"
+//#import "ActivityDetailCell.h"
+
+#import "PinglunCell.h"
+#import "TalkCell.h"
+
+#import "ShareActivityViewController.h"
+#import "JoinActViewController.h"
+#import "ActivityDetailNewViewController.h"
+#import "BottomBtnView.h"
+//#import "TabarView.h"
+#import "TabartwoView.h"
+#import "PinglunView.h"
+#import "GetJoinNumViewController.h"
+#import "GetDiscussNumViewController.h"
+#import "GetShareLisViewController.h"
+#import "FaBuActivityViewController.h"
+
+@interface ActivityDetailViewController : CommunityViewController<UITextFieldDelegate,UIAlertViewDelegate>
+{
+    UITableView *peopleTable;
+    UITableView *talkTable;
+    UITableView *shareTable;
+    NSMutableArray *dataArr;
+
+    NSDictionary *detailDic;
+    CGSize sizeScroll;
+    NSArray *userListArray;
+    NSArray *discussListArray;
+    NSArray *commentListArray;
+    
+    NSArray *shareListArray;
+    NSArray *shareCommentListArray;
+    
+    NSString *idString;
+    NSString *flagString;
+    NSString *shareFlagString;
+
+    CGFloat contentHeight;
+    CGFloat pingBtnHeight;
+    CGFloat table2Height;
+    
+    CGFloat shareContentHeight;
+    CGFloat shareTable2Height;
+
+    PinglunView *pingView;
+    NSString *zanFlagString;
+    
+    UIView *send_view;
+    UITextField *message_field;
+    
+    BottomBtnView *bottomView;
+    TabartwoView *tabarView;
+
+    NSString *urlString;
+    
+    NSString *numString;
+    NSString *discussNumString;
+    NSString *shareNumString;
+}
+
+@property(nonatomic,retain)NSString *idStr;
+@property (strong, nonatomic) IBOutlet UIScrollView *myScrollview;
+- (IBAction)telBtn:(id)sender;
+- (IBAction)detailBtnPush:(id)sender;
+@property (strong, nonatomic) IBOutlet UIButton *hotBtn;
+@property (strong, nonatomic) IBOutlet UIButton *freeBtn;
+@property (strong, nonatomic) IBOutlet UIButton *todayBtn;
+@property (strong, nonatomic) IBOutlet UIImageView *IsStartImage;
+@property (strong, nonatomic) IBOutlet UIImageView *lastLinImageV;
+
+@end

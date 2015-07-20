@@ -1,0 +1,1247 @@
+//
+//  ActivityDetailViewController.m
+//  Community
+//
+//  Created by HuaMen on 14-12-29.
+//  Copyright (c) 2014年 Hua Men. All rights reserved.
+//
+
+#import "ActivityDetailViewController.h"
+
+
+#define PeopleH  44
+#define JoinH  80
+#define PingH  100
+#define DianH  44
+#define TalkH  44
+
+@interface ActivityDetailViewController ()<UITableViewDataSource,UITableViewDelegate>
+{
+//    UITableView *tableView; talkTable
+
+}
+@property (strong, nonatomic) IBOutlet UIImageView *titleImage;
+@property (strong, nonatomic) IBOutlet UILabel *titleLabel;
+@property (strong, nonatomic) IBOutlet UILabel *AddLabel;
+@property (strong, nonatomic) IBOutlet UILabel *timeLabel;
+@property (strong, nonatomic) IBOutlet UILabel *telLabel;
+@property (strong, nonatomic) IBOutlet UILabel *userLabel;
+@property (strong, nonatomic) IBOutlet UIImageView *littleHeadImage;
+@property (strong, nonatomic) IBOutlet UILabel *hostLabel;
+@property (strong, nonatomic) IBOutlet UILabel *telepLabel;
+
+@end
+
+@implementation ActivityDetailViewController
+
+
+
+//xib构建的scrollView无法滚动  添加辅助方法！！！！！！！！！！！！！
+-(void) viewDidAppear:(BOOL)animated{
+    
+//此处需要修改
+    self.myScrollview.frame= CGRectMake(0, 0, 320, 480);
+    
+    [self.myScrollview setContentSize:sizeScroll];
+    self.myScrollview.showsVerticalScrollIndicator = NO;
+    
+}
+
+
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.title= @"活动详情";
+    [self addBarButtonItem];
+//用此处的方法可以改变scrollview的setContentSize
+    
+    sizeScroll = CGSizeMake(320, 1000);
+    [self viewDidAppear:YES];
+    
+//用此处的方法可以改变scrollview的setContentSize
+
+    //加载xib
+    [self loadView];
+    
+    [self addaBottomView];
+    
+//    tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 230, 320, self.view.bounds.size.height-64) style:UITableViewStylePlain];
+//    [tableView setDelegate:self];
+//    [tableView setDataSource:self];
+//    [tableView setShowsVerticalScrollIndicator:NO];
+//    [tableView setBackgroundColor:[UIColor clearColor]];
+    //隐藏表格中的线
+    //[tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
+    //
+
+    
+    [self homedown];
+    
+    UIButton *btn=[UIButton buttonWithType:UIButtonTypeCustom];
+    [btn setBackgroundImage:[UIImage imageNamed:@"凸起按钮"] forState:UIControlStateNormal];
+    [btn setTitle:@"我要参加" forState:UIControlStateNormal];
+    btn.frame=CGRectMake(100, self.view.bounds.size.height-40, 120, 30);
+    [btn addTarget:self action:@selector(btnClick) forControlEvents:UIControlEventTouchUpInside];
+//注销    [self.view addSubview:btn];
+    
+}
+
+#pragma mark-  BarButtonItem
+- (void)addBarButtonItem
+{
+    UIButton *leftBarBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [leftBarBtn setBackgroundImage:[UIImage imageNamed:@"nav_back.png"] forState:UIControlStateNormal];
+    leftBarBtn.frame=CGRectMake(0, 0, 12, 20);
+    leftBarBtn.tag = 101;
+    [leftBarBtn addTarget:self action:@selector(rightBarBtnSelect:) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *leftItem = [[UIBarButtonItem alloc] initWithCustomView:leftBarBtn];
+    self.navigationItem.leftBarButtonItem = leftItem;
+}
+- (void)rightBarBtnSelect:(UIButton *)btn
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+
+#pragma mark- xib 创建View
+- (void)addaBottomView
+{
+    //1.新建MyView 2.新建Empty的Xib 3，拖入一个View --选中View修改Class为MyView --设置frame为freedom改变大小  --设置status为none去掉电池  --在使用处导入。h头文件  --- (void)viewDidLoad填写下面代码
+    
+    //此处 MyView 要改名字
+    NSArray *array = [[NSBundle mainBundle]loadNibNamed:@"BottomBtnView" owner:self options:nil];
+    BottomBtnView *bottomView = [array objectAtIndex:0];
+    bottomView.backgroundColor = [UIColor whiteColor];
+    //xib坐标一定要和此处一致，不然控件不响应
+   
+    CGFloat screenHeight =  [UIScreen mainScreen].bounds.size.height;
+    
+    NSLog(@"screenHeight===%f",screenHeight);
+    NSLog(@"kScreenWidth===%f",kScreenWidth);
+
+    if (screenHeight>481)
+    {
+        //需要继续优化
+        bottomView.frame = CGRectMake(0, screenHeight-108, 320, 45);
+    }else
+    {
+       
+        bottomView.frame = CGRectMake(0, screenHeight-108, 320, 45);
+
+    }
+    [self.view addSubview:bottomView];
+    
+    [bottomView.canjiaBtn addTarget:self action:@selector(canjiaBtnClick) forControlEvents:UIControlEventTouchUpInside];
+    [bottomView.fenxiangBtn addTarget:self action:@selector(fenxiangBtnClick) forControlEvents:UIControlEventTouchUpInside];
+    [bottomView.taolunBtn addTarget:self action:@selector(taolunBtnClick) forControlEvents:UIControlEventTouchUpInside];
+
+}
+
+#pragma mark-  ButtonClick
+- (void)fenxiangBtnClick
+{
+    NSLog(@"点击1");
+    ShareActivityViewController *shareVC = [[ShareActivityViewController alloc] init];
+    shareVC.idStr = self.idStr;
+    [self.navigationController pushViewController:shareVC animated:YES];
+}
+- (void)canjiaBtnClick
+{
+    NSLog(@"点击2");
+    JoinActViewController *JoinVC = [[JoinActViewController alloc] init];
+    JoinVC.idStr = self.idStr;
+    JoinVC.titleStr = @"我要参加";
+    JoinVC.contentStr = @"刚好没事，带我一个吧";
+    JoinVC.btnStr = @"我要参加";
+    JoinVC.tag = 1;
+    [self.navigationController pushViewController:JoinVC animated:YES];
+    
+}
+- (void)taolunBtnClick
+{
+    NSLog(@"点击3");
+    JoinActViewController *JoinVC = [[JoinActViewController alloc] init];
+    JoinVC.idStr = self.idStr;
+    JoinVC.titleStr = @"参与讨论";
+    JoinVC.contentStr = @"说出你要讨论的内容";
+    JoinVC.btnStr = @"提交讨论";
+    JoinVC.tag = 2;
+    
+    
+    [self.navigationController pushViewController:JoinVC animated:YES];
+    
+}
+
+- (void)littleRequestsWithDic:(NSDictionary *)dictionaryP
+{
+    
+    NSDictionary *user = [[NSDictionary alloc]initWithObjectsAndKeys:_idStr,@"activityId", nil];
+    if ([NSJSONSerialization isValidJSONObject:user])
+    {
+        NSError *error;
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:user options:NSJSONWritingPrettyPrinted error: &error];
+        NSMutableData *tempJsonData = [NSMutableData dataWithData:jsonData];
+        NSLog(@"Register JSON:%@",[[NSString alloc] initWithData:tempJsonData encoding:NSUTF8StringEncoding]);
+        
+        NSURL *url = [NSURL URLWithString:NewActivityDetail];
+        
+        ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+        [request addRequestHeader:@"Content-Type" value:@"application/json; encoding=utf-8"];
+        [request addRequestHeader:@"Accept" value:@"application/json"];
+        NSString *str=[NSString stringWithFormat:@"Basic %@",[[[NSString stringWithFormat:@"u_%lld:%@",[AppSetting userId], [AppSetting userPassword]] dataUsingEncoding:NSUTF8StringEncoding] base64Encoding]];
+        NSLog(@"%lld",[AppSetting userId]);
+        [request addRequestHeader:@"Authorization" value:str];
+        [request setRequestMethod:@"POST"];
+        [request setPostBody:tempJsonData];
+        
+        request.tag=100;
+        
+        request.delegate=self;
+        [request startAsynchronous];
+    }
+ 
+}
+
+-(void)btnClick{
+    JoinActViewController *gv=[[JoinActViewController alloc]init];
+    gv.idStr=_idStr;
+    NSLog(@"id===%@",_idStr);
+    [self.navigationController pushViewController:gv animated:YES];
+
+    
+}
+
+#pragma mark request methods
+-(void)homedown{
+    NSDictionary *user = [[NSDictionary alloc]initWithObjectsAndKeys:_idStr,@"activityId", nil];
+    if ([NSJSONSerialization isValidJSONObject:user])
+    {
+        NSError *error;
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:user options:NSJSONWritingPrettyPrinted error: &error];
+        NSMutableData *tempJsonData = [NSMutableData dataWithData:jsonData];
+        NSLog(@"Register JSON:%@",[[NSString alloc] initWithData:tempJsonData encoding:NSUTF8StringEncoding]);
+        
+        NSURL *url = [NSURL URLWithString:NewActivityDetail];
+        ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+        //        [request setValue:[self authorizationHttpHeaderString] forHTTPHeaderField:@"Authorization"];
+        [request addRequestHeader:@"Content-Type" value:@"application/json; encoding=utf-8"];
+        [request addRequestHeader:@"Accept" value:@"application/json"];
+        NSString *str=[NSString stringWithFormat:@"Basic %@",[[[NSString stringWithFormat:@"u_%lld:%@",[AppSetting userId], [AppSetting userPassword]] dataUsingEncoding:NSUTF8StringEncoding] base64Encoding]];
+        NSLog(@"%lld",[AppSetting userId]);
+        [request addRequestHeader:@"Authorization" value:str];
+        [request setRequestMethod:@"POST"];
+        [request setPostBody:tempJsonData];
+        request.tag=100;
+        request.delegate=self;
+        [request startAsynchronous];
+    }
+    
+    
+}
+-(void)requestFailed:(ASIHTTPRequest *)request{
+    [[CommunityIndicator sharedInstance] showNoteWithTextAutoHide:@"网络不给力啊"];
+    
+}
+-(void)requestFinished:(ASIHTTPRequest *)request{
+    if (request.tag==100) {
+        NSLog(@"OK!!");
+        NSLog(@"str==%@",request.responseString);
+        NSDictionary *dic=[request.responseData objectFromJSONData];
+        NSLog(@"%@",dic);
+        NSString *result=[dic objectForKey:@"result"];
+        if ([result isEqualToString:@"1"]) {
+            //            [tableView reloadData];
+            detailDic = [dic objectForKey:@"appNewActivityVo"];
+            userListArray = [detailDic objectForKey:@"userList"];
+            idString = [detailDic objectForKey:@"id"];
+            discussListArray = [dic objectForKey:@"discussList"];
+            
+            shareListArray = [detailDic objectForKey:@"shareList"];
+            
+ //计算表格的高度 两个for循环
+            table2Height = 44;
+            CGFloat zanHeight = 44;
+            for (int i=0; i<discussListArray.count; i++)
+            {
+                CGFloat sectionHeight = [[[discussListArray objectAtIndex:i] objectForKey:@"content"] sizeWithFont:[UIFont systemFontOfSize:15] constrainedToSize:CGSizeMake(154, 1000) lineBreakMode:NSLineBreakByCharWrapping].height +72;
+                table2Height = table2Height + sectionHeight +zanHeight;
+                NSLog(@"table2Height==1112=%f",table2Height);
+
+                NSArray *commentListA = [[discussListArray objectAtIndex:i] objectForKey:@"commentList"];
+                int k = [commentListA count];
+                if (k >0) {
+                    for (int j=0; j<k; j++)
+                    {
+                        NSString *content = [[commentListA objectAtIndex:j] objectForKey:@"content"];
+                        CGFloat cellHeight = [content sizeWithFont:[UIFont systemFontOfSize:15] constrainedToSize:CGSizeMake(238, 1000) lineBreakMode:NSLineBreakByCharWrapping].height;
+                        CGFloat cellHeight1 = cellHeight + 30;
+                        table2Height = table2Height + cellHeight1;
+                        NSLog(@"table2Height==222=%f",table2Height);
+                    }
+
+                }
+            }
+            
+            //计算表格的高度 两个for循环
+            shareTable2Height = 44;
+//            CGFloat zanHeight = 44;
+            for (int i=0; i<shareListArray.count; i++)
+            {
+                CGFloat sectionHeight = [[[shareListArray objectAtIndex:i] objectForKey:@"content"] sizeWithFont:[UIFont systemFontOfSize:15] constrainedToSize:CGSizeMake(154, 1000) lineBreakMode:NSLineBreakByCharWrapping].height +72;
+                shareTable2Height = shareTable2Height + sectionHeight +zanHeight;
+                NSLog(@"shareTable2Height==1112=%f",shareTable2Height);
+                
+                NSArray *commentListA = [[shareListArray objectAtIndex:i] objectForKey:@"commentList"];
+                int k = [commentListA count];
+                if (k >0) {
+                    for (int j=0; j<k; j++)
+                    {
+                        NSString *content = [[commentListA objectAtIndex:j] objectForKey:@"content"];
+                        CGFloat cellHeight = [content sizeWithFont:[UIFont systemFontOfSize:15] constrainedToSize:CGSizeMake(238, 1000) lineBreakMode:NSLineBreakByCharWrapping].height;
+                        CGFloat cellHeight1 = cellHeight + 30;
+                        shareTable2Height = shareTable2Height + cellHeight1;
+                        NSLog(@"table2Height==222=%f",shareTable2Height);
+                    }
+                    
+                }
+            }
+
+            
+            self.titleLabel.text=[detailDic objectForKey:@"title"];
+            self.timeLabel.text=[detailDic objectForKey:@"time"];
+            self.AddLabel.text=[detailDic objectForKey:@"address"];
+            
+            self.telLabel.text = [NSString stringWithFormat:@"%@个邻居评论",[detailDic objectForKey:@"discussNum"]];
+            self.userLabel.text = [NSString stringWithFormat:@"%@个邻居已参加（最少%@人）",[detailDic objectForKey:@"num"],[detailDic objectForKey:@"lowNum"]];
+            
+            NSString *ImageStr=[detailDic objectForKey:@"pic"];
+            NSURL *imageUrl=[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",kCommunityImageServer,ImageStr]];
+            [self.littleHeadImage setImageWithURL:imageUrl placeholderImage:[UIImage imageNamed:@"logo_132"]];
+
+            self.telepLabel.text = [detailDic objectForKey:@"telephone"];
+            self.hostLabel.text = [detailDic objectForKey:@"nickName"];
+            NSString *actyStatus=[detailDic objectForKey:@"actyStatus"];
+            if ([actyStatus isEqualToString:@"3"])
+            {
+                self.IsStartImage.image = [UIImage imageNamed:@"已结束.png"];
+            }else if ([actyStatus isEqualToString:@"2"])
+            {
+                self.IsStartImage.image = [UIImage imageNamed:@"进行中.png"];
+                
+            }else
+            {
+                self.IsStartImage.image = [UIImage imageNamed:@"未开始.png"];
+            }
+
+            [self hotFreeToday];
+            
+            [self setTables];
+//            [talkTable reloadData];
+        }
+    }
+    else if (request.tag==200)
+    {
+        [self homedown];
+    }
+    else if (request.tag==300)
+    {
+        [self homedown];
+    }
+    else if (request.tag==400)
+    {
+        [self homedown];
+    }
+    else if (request.tag==500)
+    {
+        [self homedown];
+    }
+
+
+}
+
+#pragma mark-setTables
+- (void)setTables
+{
+    peopleTable = [[UITableView alloc] initWithFrame:CGRectMake(0, 230, 320, userListArray.count*JoinH + 44) style:UITableViewStylePlain];
+    peopleTable.tag = 100;
+    peopleTable.delegate = self;
+    peopleTable.dataSource = self;
+    peopleTable.scrollEnabled = NO;
+    [self.myScrollview addSubview:peopleTable];
+    
+    talkTable = [[UITableView alloc] initWithFrame:CGRectMake(0, peopleTable.frame.origin.y+peopleTable.frame.size.height+10, 320, table2Height) style:UITableViewStylePlain];
+    talkTable.tag = 200;
+    talkTable.delegate = self;
+    talkTable.dataSource = self;
+    talkTable.scrollEnabled = NO;
+    [self.myScrollview addSubview:talkTable];
+    
+    shareTable = [[UITableView alloc] initWithFrame:CGRectMake(0, talkTable.frame.origin.y+talkTable.frame.size.height+10, 320, shareTable2Height) style:UITableViewStylePlain];
+    shareTable.tag = 300;
+    shareTable.delegate = self;
+    shareTable.dataSource = self;
+    shareTable.scrollEnabled = NO;
+    [self.myScrollview addSubview:shareTable];
+    
+    sizeScroll = CGSizeMake(320, shareTable.frame.origin.y + shareTable2Height + 300);
+    [self viewDidAppear:YES];
+
+
+
+
+}
+
+#pragma mark-tableViewDelegate
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    if (tableView.tag == 200) {
+        return discussListArray.count + 1;
+    } else if (tableView.tag == 300) {
+        return shareListArray.count + 1;
+    }
+    else{
+        return 1;
+    }
+}
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    if (tableView.tag==100) {
+        return userListArray.count+1;
+        //回退到此暂停
+    }else if (tableView.tag == 200)
+    {
+        if (section==0) {
+            return 1;
+        }else
+        {
+            commentListArray = [[discussListArray objectAtIndex:section-1] objectForKey:@"commentList"];
+            return commentListArray.count + 2;
+        }
+    }else
+    {
+        if (section==0) {
+            return 1;
+        }else
+        {
+            shareCommentListArray = [[shareListArray objectAtIndex:section-1] objectForKey:@"commentList"];
+            return shareCommentListArray.count + 2;
+        }
+    }
+
+}
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    
+    if (tableView.tag==100)
+    {
+        if (indexPath.row==0) {
+            return 44;
+        }else
+        {
+            return 80;
+        }
+    }else if (tableView.tag==200)
+    {
+        if (indexPath.section==0) {
+            return 44;
+        }else
+        {
+            if (indexPath.row==0)
+            {
+                CGFloat height = 46;
+                height += (contentHeight + 26);
+
+                return height;
+            }else if (indexPath.row==1)
+            {
+                CGFloat height = 44;
+                return height;
+            }else
+            {
+                CGFloat height = contentHeight + 30;
+                return height;
+            }
+        }
+        
+    }else
+    {
+        if (indexPath.section==0) {
+            return 44;
+        }else
+        {
+            if (indexPath.row==0)
+            {
+                CGFloat height = 46;
+                height += (shareContentHeight + 26);
+                
+                return height;
+            }else if (indexPath.row==1)
+            {
+                CGFloat height = 44;
+                return height;
+            }else
+            {
+                CGFloat height = shareContentHeight + 30;
+                return height;
+                
+            }
+            
+        }
+        
+    }
+
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [pingView removeFromSuperview];
+    if (tableView.tag==100) {
+        if (indexPath.row==0)
+        {
+            GetJoinNumViewController *getVC = [[GetJoinNumViewController alloc] init];
+            getVC.activityId = idString;
+            [self.navigationController pushViewController:getVC animated:YES];
+        }
+    }else if (tableView.tag==200)
+    {
+        if (indexPath.section==0&&indexPath.row==0)
+        {
+            GetDiscussNumViewController *getVC = [[GetDiscussNumViewController alloc] init];
+            getVC.activityId = idString;
+            [self.navigationController pushViewController:getVC animated:YES];
+        }
+  
+    }else if (tableView.tag==300)
+    {
+        if (indexPath.section==0&&indexPath.row==0)
+        {
+            GetShareLisViewController *getVC = [[GetShareLisViewController alloc] init];
+            getVC.activityId = idString;
+            [self.navigationController pushViewController:getVC animated:YES];
+        }
+
+    }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 0;
+}
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 0;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (tableView.tag==100) {
+        if (indexPath.row==0) {
+            static NSString *cellIdentifier = @"cellIdentiifer";
+            PeopleNumTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+            if (!cell)
+            {
+                NSArray *array = [[NSBundle mainBundle] loadNibNamed:@"PeopleNumTableViewCell" owner:nil options:nil];
+                
+                cell = (PeopleNumTableViewCell *)[array objectAtIndex:0];
+            }
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            cell.userLabel.text = [NSString stringWithFormat:@"参加人数（%d）",userListArray.count];
+            return cell;
+            
+        }else
+        {
+            static NSString *cellIdentifier = @"cellIdentiifer";
+            JoinTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+            if (!cell)
+            {
+                NSArray *array = [[NSBundle mainBundle] loadNibNamed:@"JoinTableViewCell" owner:nil options:nil];
+                
+                cell = (JoinTableViewCell *)[array objectAtIndex:0];
+            }
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
+            NSDictionary *userListDic = [userListArray objectAtIndex:indexPath.row-1];
+            NSString *ImageStr=[[userListArray objectAtIndex:indexPath.row-1] objectForKey:@"userPic"];
+            NSURL *imageUrl=[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",kCommunityImageServer,ImageStr]];
+            [cell.userPic setImageWithURL:imageUrl placeholderImage:[UIImage imageNamed:@"logo_132"]];
+            cell.level.text = [NSString stringWithFormat:@"%@  %@",[userListDic objectForKey:@"level"],[userListDic objectForKey:@"name"]];
+            cell.time.text = [NSString stringWithFormat:@"%@",[userListDic objectForKey:@"time"]];
+            cell.actNum.text = [NSString stringWithFormat:@"已参加%@次活动",[userListDic objectForKey:@"actNum"]];
+            cell.content.text = [NSString stringWithFormat:@"%@",[userListDic objectForKey:@"content"]];
+
+            return cell;
+            
+        }
+    }else if (tableView.tag==200)
+    {
+        if (indexPath.section==0) {
+            static NSString *cellIdentifier = @"cellIdentiifer";
+            PeopleNumTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+            if (!cell)
+            {
+                NSArray *array = [[NSBundle mainBundle] loadNibNamed:@"PeopleNumTableViewCell" owner:nil options:nil];
+                
+                cell = (PeopleNumTableViewCell *)[array objectAtIndex:0];
+            }
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            cell.userLabel.text = [NSString stringWithFormat:@"参加讨论（%d）",discussListArray.count];
+            return cell;
+            
+        }else
+        {
+            if (indexPath.row==0)
+            {
+                static NSString *cellIdentifier = @"cellIdentiifer";
+                PinglunCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+                if (!cell)
+                {
+                    cell = [[PinglunCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
+                    
+                }
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                NSDictionary *dic = [discussListArray objectAtIndex:indexPath.section-1];
+                
+                NSString *ImageStr=[dic objectForKey:@"userPic"];
+                NSURL *imageUrl=[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",kCommunityImageServer,ImageStr]];
+                [cell.userPic setImageWithURL:imageUrl placeholderImage:[UIImage imageNamed:@"logo_132"]];
+                
+                cell.level.text = [NSString stringWithFormat:@"%@  %@",[dic objectForKey:@"level"],[dic objectForKey:@"name"]];
+                cell.time.text = [NSString stringWithFormat:@"%@",[dic objectForKey:@"time"]];
+                cell.content.text = [NSString stringWithFormat:@"%@",[dic objectForKey:@"content"]];
+                contentHeight = [cell.content.text sizeWithFont:[UIFont systemFontOfSize:15] constrainedToSize:CGSizeMake(154, 1000) lineBreakMode:NSLineBreakByCharWrapping].height;
+                //delType
+                if ([[dic objectForKey:@"delType"] isEqualToString:@"0"]) {
+                    cell.deleteBtn.hidden=YES;
+                }
+                
+                cell.content.frame = CGRectMake(89, 46, 154, contentHeight);
+                cell.imageLine.frame = CGRectMake(0, cell.content.frame.size.height+72, 320, 0.5);
+               // _pinglunBtn.frame = CGRectMake(287, _content.frame.size.height+55, 19, 15);
+                cell.pinglunBtn.frame = CGRectMake(287, cell.content.frame.size.height+55, 19, 15);
+
+                cell.pinglunBtn.tag = indexPath.section - 1;
+                
+                
+                [cell.pinglunBtn addTarget:self action:@selector(pinglunBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+                return cell;
+            }else if (indexPath.row==1)
+            {
+                static NSString *cellIdentifier = @"cellIdentiifer";
+                DianZanTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+                if (!cell)
+                {
+                    NSArray *array = [[NSBundle mainBundle] loadNibNamed:@"DianZanTableViewCell" owner:nil options:nil];
+                    
+                    cell = (DianZanTableViewCell *)[array objectAtIndex:0];
+                }
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                
+                NSDictionary *dic = [discussListArray objectAtIndex:indexPath.section-1];
+                commentListArray = [[discussListArray objectAtIndex:indexPath.section-1] objectForKey:@"commentList"];
+                
+                cell.dianZanNum.text = [NSString stringWithFormat:@"%@",[dic objectForKey:@"zanString"]];
+                
+                return cell;
+            }else
+            {
+                static NSString *cellIdentifier = @"cellIdentiifer";
+                TalkCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+                if (!cell)
+                {
+                    cell = [[TalkCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
+                    
+                }
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                
+                commentListArray = [[discussListArray objectAtIndex:indexPath.section-1] objectForKey:@"commentList"];
+
+                NSDictionary *dic = [commentListArray objectAtIndex:indexPath.row-2];
+                
+                NSString *ImageStr=[dic objectForKey:@"userPic"];
+                NSURL *imageUrl=[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",kCommunityImageServer,ImageStr]];
+                [cell.userPic setImageWithURL:imageUrl placeholderImage:[UIImage imageNamed:@"logo_132"]];
+                
+                cell.level.text = [NSString stringWithFormat:@"%@  %@",[dic objectForKey:@"level"],[dic objectForKey:@"name"]];
+                cell.time.text = [NSString stringWithFormat:@"%@",[dic objectForKey:@"time"]];
+                cell.content.text = [NSString stringWithFormat:@"%@",[dic objectForKey:@"content"]];
+                
+                contentHeight = [cell.content.text sizeWithFont:[UIFont systemFontOfSize:15] constrainedToSize:CGSizeMake(238, 1000) lineBreakMode:NSLineBreakByCharWrapping].height;
+                
+                cell.content.frame = CGRectMake(82, 24, 238, contentHeight);
+                cell.imageLine.frame = CGRectMake(0, cell.content.frame.size.height+29.5, 320, 0.5);
+                return cell;
+                
+                
+            }
+
+        }
+
+    }else
+    {
+        if (indexPath.section==0) {
+            static NSString *cellIdentifier = @"cellIdentiifer";
+            PeopleNumTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+            if (!cell)
+            {
+                NSArray *array = [[NSBundle mainBundle] loadNibNamed:@"PeopleNumTableViewCell" owner:nil options:nil];
+                
+                cell = (PeopleNumTableViewCell *)[array objectAtIndex:0];
+            }
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            cell.userLabel.text = [NSString stringWithFormat:@"分享（%d）",shareListArray.count];
+            return cell;
+            
+        }else
+        {
+            if (indexPath.row==0)
+            {
+                static NSString *cellIdentifier = @"cellIdentiifer";
+                PinglunCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+                if (!cell)
+                {
+                    cell = [[PinglunCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
+                }
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                NSDictionary *dic = [shareListArray objectAtIndex:indexPath.section-1];
+                
+                NSString *ImageStr=[dic objectForKey:@"userPic"];
+                NSURL *imageUrl=[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",kCommunityImageServer,ImageStr]];
+                [cell.userPic setImageWithURL:imageUrl placeholderImage:[UIImage imageNamed:@"logo_132"]];
+                
+                cell.level.text = [NSString stringWithFormat:@"%@  %@",[dic objectForKey:@"level"],[dic objectForKey:@"name"]];
+                cell.time.text = [NSString stringWithFormat:@"%@",[dic objectForKey:@"time"]];
+                cell.content.text = [NSString stringWithFormat:@"%@",[dic objectForKey:@"content"]];
+                shareContentHeight = [cell.content.text sizeWithFont:[UIFont systemFontOfSize:15] constrainedToSize:CGSizeMake(154, 1000) lineBreakMode:NSLineBreakByCharWrapping].height;
+                //delType  <null>指针为空时需要判断处理
+//                if ([[dic objectForKey:@"delType"] isEqualToString:@"0"]) {
+//                    cell.deleteBtn.hidden=YES;
+//                }
+                cell.deleteBtn.hidden=YES;
+                
+                cell.content.frame = CGRectMake(89, 46, 154, shareContentHeight);
+                cell.imageLine.frame = CGRectMake(0, cell.content.frame.size.height+72, 320, 0.5);
+                cell.pinglunBtn.frame = CGRectMake(287, cell.content.frame.size.height+55, 19, 15);
+                
+                cell.pinglunBtn.tag = indexPath.section - 1;
+                
+                [cell.pinglunBtn addTarget:self action:@selector(sharePinglunBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+                return cell;
+            }else if (indexPath.row==1)
+            {
+                static NSString *cellIdentifier = @"cellIdentiifer";
+                DianZanTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+                if (!cell)
+                {
+                    NSArray *array = [[NSBundle mainBundle] loadNibNamed:@"DianZanTableViewCell" owner:nil options:nil];
+                    
+                    cell = (DianZanTableViewCell *)[array objectAtIndex:0];
+                }
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                
+                NSDictionary *dic = [shareListArray objectAtIndex:indexPath.section-1];
+                shareCommentListArray = [[shareListArray objectAtIndex:indexPath.section-1] objectForKey:@"commentList"];
+                
+                cell.dianZanNum.text = [NSString stringWithFormat:@"%@",[dic objectForKey:@"zanString"]];
+                
+                return cell;
+            }else
+            {
+                static NSString *cellIdentifier = @"cellIdentiifer";
+                TalkCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+                if (!cell)
+                {
+                    cell = [[TalkCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
+                    
+                }
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                
+                shareCommentListArray = [[shareListArray objectAtIndex:indexPath.section-1] objectForKey:@"commentList"];
+                
+                NSDictionary *dic = [shareCommentListArray objectAtIndex:indexPath.row-2];
+                
+                NSString *ImageStr=[dic objectForKey:@"userPic"];
+                NSURL *imageUrl=[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",kCommunityImageServer,ImageStr]];
+                [cell.userPic setImageWithURL:imageUrl placeholderImage:[UIImage imageNamed:@"logo_132"]];
+                
+                cell.level.text = [NSString stringWithFormat:@"%@  %@",[dic objectForKey:@"level"],[dic objectForKey:@"name"]];
+                cell.time.text = [NSString stringWithFormat:@"%@",[dic objectForKey:@"time"]];
+                cell.content.text = [NSString stringWithFormat:@"%@",[dic objectForKey:@"content"]];
+                
+                shareContentHeight = [cell.content.text sizeWithFont:[UIFont systemFontOfSize:15] constrainedToSize:CGSizeMake(238, 1000) lineBreakMode:NSLineBreakByCharWrapping].height;
+                
+                cell.content.frame = CGRectMake(82, 24, 238, shareContentHeight);
+                cell.imageLine.frame = CGRectMake(0, cell.content.frame.size.height+29.5, 320, 0.5);
+                return cell;
+                
+                
+            }
+            
+        }
+        
+    }
+}
+- (void)sharePinglunBtnClick:(UIButton *)btn
+{
+    CGFloat zanHeight = 44;
+    //lineHeight 第N个讨论表格总高度
+    CGFloat lineHeight = 44;
+    for (int i=0; i<btn.tag + 1; i++)
+    {
+        CGFloat sectionHeight = [[[shareListArray objectAtIndex:i] objectForKey:@"content"] sizeWithFont:[UIFont systemFontOfSize:15] constrainedToSize:CGSizeMake(154, 1000) lineBreakMode:NSLineBreakByCharWrapping].height +72;
+        lineHeight = lineHeight + sectionHeight +zanHeight;
+        NSLog(@"table2Height==1112=%f",lineHeight);
+        NSArray *commentListA = [[shareListArray objectAtIndex:i] objectForKey:@"commentList"];
+        int k = [commentListA count];
+        //此处判断很重要
+        if (k >0) {
+            for (int j=0; j<k; j++)
+            {
+                NSString *content = [[commentListA objectAtIndex:j] objectForKey:@"content"];
+                CGFloat cellHeight = [content sizeWithFont:[UIFont systemFontOfSize:15] constrainedToSize:CGSizeMake(238, 1000) lineBreakMode:NSLineBreakByCharWrapping].height;
+                CGFloat cellHeight1 = cellHeight + 30;
+                lineHeight = lineHeight + cellHeight1;
+                NSLog(@"table2Height==222=%f",lineHeight);
+                
+            }
+            
+        }
+    }
+    
+    NSArray *duoyuArray = [[shareListArray objectAtIndex:btn.tag] objectForKey:@"commentList"];
+    int q = [duoyuArray count];
+    if (q >0) {
+        for (int j=0; j<q; j++)
+        {
+            NSString *content = [[duoyuArray objectAtIndex:j] objectForKey:@"content"];
+            CGFloat cellHeight = [content sizeWithFont:[UIFont systemFontOfSize:15] constrainedToSize:CGSizeMake(238, 1000) lineBreakMode:NSLineBreakByCharWrapping].height;
+            CGFloat duoyuHeight = cellHeight + 30;
+            lineHeight = lineHeight - duoyuHeight;
+            NSLog(@"table2Height==222=%f",lineHeight);
+            
+        }
+        
+    }
+    
+    
+    
+    NSLog(@"123123123=====");
+    
+    NSArray *array = [[NSBundle mainBundle]loadNibNamed:@"PinglunView" owner:self options:nil];
+    pingView = [array objectAtIndex:0];
+    pingView.frame = CGRectMake(190,lineHeight+shareTable.frame.origin.y-44, 130, 30);
+    //判断是否点赞
+    
+    pingView.zanBtn.tag = btn.tag;
+    pingView.pingBtn.tag = btn.tag;
+    
+    [pingView.zanBtn addTarget:self action:@selector(shareZanBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    [pingView.pingBtn addTarget:self action:@selector(sharePingBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    
+    
+    [self.myScrollview addSubview:pingView];
+    zanFlagString = [[shareListArray objectAtIndex:btn.tag] objectForKey:@"zanFlag"];
+    NSLog(@"zanFlagString===%@",zanFlagString);
+    if ([zanFlagString isEqualToString:@"1"]) {
+        pingView.zanLabel.text = @"赞";
+    }else
+    {
+        pingView.zanLabel.text = @"取消赞";
+    }
+ 
+}
+- (void)pinglunBtnClick:(UIButton *)btn
+{
+    CGFloat zanHeight = 44;
+    //lineHeight 第N个讨论表格总高度
+    CGFloat lineHeight = 44;
+    for (int i=0; i<btn.tag + 1; i++)
+    {
+        CGFloat sectionHeight = [[[discussListArray objectAtIndex:i] objectForKey:@"content"] sizeWithFont:[UIFont systemFontOfSize:15] constrainedToSize:CGSizeMake(154, 1000) lineBreakMode:NSLineBreakByCharWrapping].height +72;
+        lineHeight = lineHeight + sectionHeight +zanHeight;
+        NSLog(@"table2Height==1112=%f",lineHeight);
+        NSArray *commentListA = [[discussListArray objectAtIndex:i] objectForKey:@"commentList"];
+        int k = [commentListA count];
+        //此处判断很重要
+        if (k >0) {
+            for (int j=0; j<k; j++)
+            {
+                NSString *content = [[commentListA objectAtIndex:j] objectForKey:@"content"];
+                CGFloat cellHeight = [content sizeWithFont:[UIFont systemFontOfSize:15] constrainedToSize:CGSizeMake(238, 1000) lineBreakMode:NSLineBreakByCharWrapping].height;
+                CGFloat cellHeight1 = cellHeight + 30;
+                lineHeight = lineHeight + cellHeight1;
+                NSLog(@"table2Height==222=%f",lineHeight);
+                
+            }
+            
+        }
+    }
+    
+    NSArray *duoyuArray = [[discussListArray objectAtIndex:btn.tag] objectForKey:@"commentList"];
+    int q = [duoyuArray count];
+    if (q >0) {
+        for (int j=0; j<q; j++)
+        {
+            NSString *content = [[duoyuArray objectAtIndex:j] objectForKey:@"content"];
+            CGFloat cellHeight = [content sizeWithFont:[UIFont systemFontOfSize:15] constrainedToSize:CGSizeMake(238, 1000) lineBreakMode:NSLineBreakByCharWrapping].height;
+            CGFloat duoyuHeight = cellHeight + 30;
+            lineHeight = lineHeight - duoyuHeight;
+            NSLog(@"table2Height==222=%f",lineHeight);
+            
+        }
+        
+    }
+
+
+    
+    NSLog(@"123123123=====");
+    
+    NSArray *array = [[NSBundle mainBundle]loadNibNamed:@"PinglunView" owner:self options:nil];
+    pingView = [array objectAtIndex:0];
+    pingView.frame = CGRectMake(190,lineHeight+talkTable.frame.origin.y-44, 130, 30);
+    //判断是否点赞
+    
+    
+    
+    pingView.zanBtn.tag = btn.tag;
+    pingView.pingBtn.tag = btn.tag;
+
+    [pingView.zanBtn addTarget:self action:@selector(zanBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    [pingView.pingBtn addTarget:self action:@selector(pingBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+
+    
+    [self.myScrollview addSubview:pingView];
+    zanFlagString = [[discussListArray objectAtIndex:btn.tag] objectForKey:@"zanFlag"];
+    NSLog(@"zanFlagString===%@",zanFlagString);
+    if ([zanFlagString isEqualToString:@"1"]) {
+        pingView.zanLabel.text = @"赞";
+    }else
+    {
+        pingView.zanLabel.text = @"取消赞";
+    }
+
+}
+- (void)pingBtnClick:(UIButton *)btn
+{
+    send_view =[[UIView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height-49, 320, 49)];
+    send_view.backgroundColor=[UIColor lightGrayColor];
+    [self.view addSubview:send_view];
+    UIButton *sendbtn=[UIButton buttonWithType:UIButtonTypeCustom];
+    sendbtn.frame=CGRectMake(210, 5, 110, 39);
+    [sendbtn setTitle:@"发送" forState:UIControlStateNormal];
+    [sendbtn setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+    [sendbtn addTarget:self action:@selector(sendbtnClick) forControlEvents:UIControlEventTouchUpInside];
+    [send_view addSubview:sendbtn];
+    
+    message_field=[[UITextField alloc] initWithFrame:CGRectMake(5, 5, 200, 39)];
+    message_field.borderStyle=UITextBorderStyleRoundedRect;
+    message_field.delegate=self;
+    message_field.placeholder=@"请输入信息";
+    [send_view addSubview:message_field];
+
+    
+    [pingView removeFromSuperview];
+    
+}
+- (void)sharePingBtnClick:(UIButton *)btn
+{
+    send_view =[[UIView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height-49, 320, 49)];
+    send_view.backgroundColor=[UIColor lightGrayColor];
+    [self.view addSubview:send_view];
+    UIButton *sendbtn=[UIButton buttonWithType:UIButtonTypeCustom];
+    sendbtn.frame=CGRectMake(210, 5, 110, 39);
+    [sendbtn setTitle:@"发送" forState:UIControlStateNormal];
+    [sendbtn setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+    [sendbtn addTarget:self action:@selector(shareSendbtnClick) forControlEvents:UIControlEventTouchUpInside];
+    [send_view addSubview:sendbtn];
+    
+    message_field=[[UITextField alloc] initWithFrame:CGRectMake(5, 5, 200, 39)];
+    message_field.borderStyle=UITextBorderStyleRoundedRect;
+    message_field.delegate=self;
+    message_field.placeholder=@"请输入信息";
+    [send_view addSubview:message_field];
+    [pingView removeFromSuperview];
+    
+}
+- (void)shareSendbtnClick
+{
+    [self sharePinglunRequest:pingView.pingBtn];
+    
+    [message_field resignFirstResponder];
+    [UIView beginAnimations:nil context:nil];
+    [UIView setAnimationDuration:0.25];
+    [send_view removeFromSuperview];
+    [UIView commitAnimations];
+    
+}
+
+
+- (void)sendbtnClick
+{
+  [self pinglunRequest:pingView.pingBtn];
+    
+    [message_field resignFirstResponder];
+    [UIView beginAnimations:nil context:nil];
+    [UIView setAnimationDuration:0.25];
+    [send_view removeFromSuperview];
+    [UIView commitAnimations];
+
+}
+
+#pragma mark-textFieldDelegate
+- (void)textFieldDidBeginEditing:(UITextField *)textField{
+    //开始编辑的时候 不要被键盘挡到
+    NSLog(@"开始编辑");
+    [UIView beginAnimations:nil context:nil];
+    [UIView setAnimationDuration:0.25];
+    send_view.frame=CGRectMake(0, self.view.frame.size.height-49-250, 320, 49);
+    [UIView commitAnimations];
+}
+- (BOOL)textFieldShouldReturn:(UITextField *)textField{
+    //键盘return按钮的时候  把相关视图恢复到原来的位置
+    [textField resignFirstResponder];
+    [UIView beginAnimations:nil context:nil];
+    [UIView setAnimationDuration:0.25];
+    send_view.frame=CGRectMake(0, self.view.frame.size.height-49, 320, 49);
+    [UIView commitAnimations];
+    return YES;
+}
+- (void)sharePinglunRequest:(UIButton *)btn
+{
+    NSString *idstring = [[shareListArray objectAtIndex:btn.tag] objectForKey:@"id"];
+    NSString *contentString = message_field.text;
+    NSDictionary *user = [[NSDictionary alloc]initWithObjectsAndKeys:idstring,@"shareid",contentString,@"content", nil];
+    
+    
+    if ([NSJSONSerialization isValidJSONObject:user])
+    {
+        NSError *error;
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:user options:NSJSONWritingPrettyPrinted error: &error];
+        NSMutableData *tempJsonData = [NSMutableData dataWithData:jsonData];
+        NSLog(@"Register JSON:%@",[[NSString alloc] initWithData:tempJsonData encoding:NSUTF8StringEncoding]);
+        
+        NSURL *url = [NSURL URLWithString:Shareaddcomment];
+        
+        ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+        [request addRequestHeader:@"Content-Type" value:@"application/json; encoding=utf-8"];
+        [request addRequestHeader:@"Accept" value:@"application/json"];
+        NSString *str=[NSString stringWithFormat:@"Basic %@",[[[NSString stringWithFormat:@"u_%lld:%@",[AppSetting userId], [AppSetting userPassword]] dataUsingEncoding:NSUTF8StringEncoding] base64Encoding]];
+        NSLog(@"%lld",[AppSetting userId]);
+        [request addRequestHeader:@"Authorization" value:str];
+        [request setRequestMethod:@"POST"];
+        [request setPostBody:tempJsonData];
+        
+        request.tag=500;
+        
+        request.delegate=self;
+        [request startAsynchronous];
+    }
+    
+}
+
+- (void)pinglunRequest:(UIButton *)btn
+{
+    NSString *idstring = [[discussListArray objectAtIndex:btn.tag] objectForKey:@"id"];
+    NSString *contentString = message_field.text;
+    NSDictionary *user = [[NSDictionary alloc]initWithObjectsAndKeys:idstring,@"discussId",contentString,@"content", nil];
+    
+    
+    if ([NSJSONSerialization isValidJSONObject:user])
+    {
+        NSError *error;
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:user options:NSJSONWritingPrettyPrinted error: &error];
+        NSMutableData *tempJsonData = [NSMutableData dataWithData:jsonData];
+        NSLog(@"Register JSON:%@",[[NSString alloc] initWithData:tempJsonData encoding:NSUTF8StringEncoding]);
+        
+        NSURL *url = [NSURL URLWithString:Talkaddcomment];
+        
+        ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+        [request addRequestHeader:@"Content-Type" value:@"application/json; encoding=utf-8"];
+        [request addRequestHeader:@"Accept" value:@"application/json"];
+        NSString *str=[NSString stringWithFormat:@"Basic %@",[[[NSString stringWithFormat:@"u_%lld:%@",[AppSetting userId], [AppSetting userPassword]] dataUsingEncoding:NSUTF8StringEncoding] base64Encoding]];
+        NSLog(@"%lld",[AppSetting userId]);
+        [request addRequestHeader:@"Authorization" value:str];
+        [request setRequestMethod:@"POST"];
+        [request setPostBody:tempJsonData];
+        
+        request.tag=300;
+        
+        request.delegate=self;
+        [request startAsynchronous];
+    }
+ 
+}
+- (void)zanBtnClick:(UIButton *)btn
+{
+    NSString *idstring = [[discussListArray objectAtIndex:btn.tag] objectForKey:@"id"];
+    NSLog(@"idString===%@",idstring);
+    
+    NSDictionary *user = [[NSDictionary alloc]initWithObjectsAndKeys:idstring,@"discussId", nil];
+    
+    if ([zanFlagString isEqualToString:@"1"]) {
+        user = [[NSDictionary alloc]initWithObjectsAndKeys:idstring,@"discussId", nil];
+    }else
+    {
+        user = [[NSDictionary alloc]initWithObjectsAndKeys:idstring,@"id", nil];
+    }
+    
+    if ([NSJSONSerialization isValidJSONObject:user])
+    {
+        NSError *error;
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:user options:NSJSONWritingPrettyPrinted error: &error];
+        NSMutableData *tempJsonData = [NSMutableData dataWithData:jsonData];
+        NSLog(@"Register JSON:%@",[[NSString alloc] initWithData:tempJsonData encoding:NSUTF8StringEncoding]);
+        
+        NSURL *url = [NSURL URLWithString:TalkDianzan];
+        if ([zanFlagString isEqualToString:@"1"]) {
+            url = [NSURL URLWithString:TalkDianzan];
+        }else
+        {
+            url = [NSURL URLWithString:TalkDeleteDianzan];
+        }
+        ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+        [request addRequestHeader:@"Content-Type" value:@"application/json; encoding=utf-8"];
+        [request addRequestHeader:@"Accept" value:@"application/json"];
+        NSString *str=[NSString stringWithFormat:@"Basic %@",[[[NSString stringWithFormat:@"u_%lld:%@",[AppSetting userId], [AppSetting userPassword]] dataUsingEncoding:NSUTF8StringEncoding] base64Encoding]];
+        NSLog(@"%lld",[AppSetting userId]);
+        [request addRequestHeader:@"Authorization" value:str];
+        [request setRequestMethod:@"POST"];
+        [request setPostBody:tempJsonData];
+        
+        request.tag=200;
+        request.delegate=self;
+        [request startAsynchronous];
+    }
+    [pingView removeFromSuperview];
+    
+}
+
+- (void)shareZanBtnClick:(UIButton *)btn
+{
+    NSString *idstring = [[shareListArray objectAtIndex:btn.tag] objectForKey:@"id"];
+    NSLog(@"idString===%@",idstring);
+    NSDictionary *user = [[NSDictionary alloc]initWithObjectsAndKeys:idstring,@"shareId", nil];
+
+    if ([zanFlagString isEqualToString:@"1"]) {
+        user = [[NSDictionary alloc]initWithObjectsAndKeys:idstring,@"shareId", nil];
+    }else
+    {
+        user = [[NSDictionary alloc]initWithObjectsAndKeys:idstring,@"shareId", nil];
+    }
+
+    if ([NSJSONSerialization isValidJSONObject:user])
+    {
+        NSError *error;
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:user options:NSJSONWritingPrettyPrinted error: &error];
+        NSMutableData *tempJsonData = [NSMutableData dataWithData:jsonData];
+        NSLog(@"Register JSON:%@",[[NSString alloc] initWithData:tempJsonData encoding:NSUTF8StringEncoding]);
+        
+        NSURL *url = [NSURL URLWithString:ShareDianzan];
+        if ([zanFlagString isEqualToString:@"1"]) {
+            url = [NSURL URLWithString:ShareDianzan];
+        }else
+        {
+            url = [NSURL URLWithString:ShareDeleteDianzan];
+        }
+        ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+        [request addRequestHeader:@"Content-Type" value:@"application/json; encoding=utf-8"];
+        [request addRequestHeader:@"Accept" value:@"application/json"];
+        NSString *str=[NSString stringWithFormat:@"Basic %@",[[[NSString stringWithFormat:@"u_%lld:%@",[AppSetting userId], [AppSetting userPassword]] dataUsingEncoding:NSUTF8StringEncoding] base64Encoding]];
+        NSLog(@"%lld",[AppSetting userId]);
+        [request addRequestHeader:@"Authorization" value:str];
+        [request setRequestMethod:@"POST"];
+        [request setPostBody:tempJsonData];
+        
+        request.tag=400;
+        request.delegate=self;
+        [request startAsynchronous];
+    }
+    [pingView removeFromSuperview];
+    
+}
+- (void)hotFreeToday
+{
+    NSString *hot=[detailDic objectForKey:@"hot"];
+    NSString *free=[detailDic objectForKey:@"free"];
+    NSString *today=[detailDic objectForKey:@"today"];
+    NSString *price=[detailDic objectForKey:@"price"];
+    
+    NSLog(@"hot==%@free==%@today==%@price==%@",hot,free,today,price);
+    
+    self.hotBtn.hidden = YES;
+    self.freeBtn.hidden = YES;
+    self.todayBtn.hidden = YES;
+    if ([hot isEqualToString:@"1"]&&[price isEqualToString:@"0"]&&[today isEqualToString:@"1"]) {
+        self.hotBtn.hidden = NO;
+        self.freeBtn.hidden = NO;
+        self.todayBtn.hidden = NO;
+        [self.hotBtn setTitle:@"热门" forState:UIControlStateNormal];
+        [self.freeBtn setTitle:@"免费" forState:UIControlStateNormal];
+        [self.todayBtn setTitle:@"今天" forState:UIControlStateNormal];
+        
+    }else if ([hot isEqualToString:@"0"]&&[price isEqualToString:@"0"]&&[today isEqualToString:@"1"]) {
+        self.hotBtn.hidden = NO;
+        self.freeBtn.hidden = NO;
+        [self.hotBtn setTitle:@"免费" forState:UIControlStateNormal];
+        [self.freeBtn setTitle:@"今天" forState:UIControlStateNormal];
+        
+    }else if ([hot isEqualToString:@"1"]&&![price isEqualToString:@"0"]&&[today isEqualToString:@"1"]) {
+        self.hotBtn.hidden = NO;
+        self.freeBtn.hidden = NO;
+        [self.hotBtn setTitle:@"热门" forState:UIControlStateNormal];
+        [self.freeBtn setTitle:@"今天" forState:UIControlStateNormal];
+        
+    }else if ([hot isEqualToString:@"1"]&&[price isEqualToString:@"0"]&&[today isEqualToString:@"0"]) {
+        self.hotBtn.hidden = NO;
+        self.freeBtn.hidden = NO;
+        [self.hotBtn setTitle:@"热门" forState:UIControlStateNormal];
+        [self.freeBtn setTitle:@"免费" forState:UIControlStateNormal];
+        
+    }else if ([hot isEqualToString:@"0"]&&![price isEqualToString:@"0"]&&[today isEqualToString:@"1"]) {
+        self.hotBtn.hidden = NO;
+        [self.hotBtn setTitle:@"今天" forState:UIControlStateNormal];
+        
+    }else if ([hot isEqualToString:@"1"]&&![price isEqualToString:@"0"]&&[today isEqualToString:@"0"]) {
+        self.hotBtn.hidden = NO;
+        [self.hotBtn setTitle:@"热门" forState:UIControlStateNormal];
+    }else if ([hot isEqualToString:@"0"]&&[price isEqualToString:@"0"]&&[today isEqualToString:@"0"]) {
+        self.hotBtn.hidden = NO;
+        [self.hotBtn setTitle:@"免费" forState:UIControlStateNormal];
+    }else {
+        //不显示任何东西
+    }
+
+    
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+
+//打电话
+- (IBAction)telBtn:(id)sender {
+    //NSString *num = [[NSString alloc] initWithFormat:@"tel://%@",number]; //结束电话之后会进入联系人列表
+    NSString *num = [[NSString alloc] initWithFormat:@"telprompt://%@",self.telepLabel.text]; //而这个方法则打电话前先弹框,打完电话之后回到程序中
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:num]];
+
+}
+
+- (IBAction)detailBtnPush:(id)sender {
+    ActivityDetailNewViewController *controller = [[ActivityDetailNewViewController alloc] init];
+    controller.idStr = self.idStr;
+    [self.navigationController pushViewController:controller animated:YES];
+
+}
+@end

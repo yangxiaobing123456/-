@@ -1,0 +1,373 @@
+//
+//  Prefix header
+//
+//  The contents of this file are implicitly included at the beginning of every source file.
+//
+
+#import <Availability.h>
+
+#ifndef __IPHONE_3_0
+#warning "This project uses features only available in iOS SDK 3.0 and later."
+#endif
+
+#define StartSuppressPerformSelectorLeakWarning \
+_Pragma("clang diagnostic push") \
+_Pragma("clang diagnostic ignored \"-Warc-performSelector-leaks\"")
+
+#define EndSuppressPerformSelectorLeakWarning _Pragma("clang diagnostic pop")
+
+#define SuppressPerformSelectorLeakWarning(Stuff) \
+do { \
+    StartSuppressPerformSelectorLeakWarning \
+    Stuff; \
+    EndSuppressPerformSelectorLeakWarning \
+} while (0)
+
+#ifdef __OBJC__
+    #import <UIKit/UIKit.h>
+    #import <Foundation/Foundation.h>
+    #import <CoreData/CoreData.h>
+    #import <QuartzCore/QuartzCore.h>
+    #import "HttpResponseNotification.h"
+    #import "NSDictionary+QueryString.h"
+    #import "NSString+Extensions.h"
+    #import "CommunityDbManager.h"
+    #import "CommunityTableView.h"
+    #import "CommunityIndicator.h"
+    #import "UIColor+extend.h"
+    #import "AppSetting.h"
+    #import "JSONKit.h"
+    #import "JLog.h"
+    #import "ASIHTTPRequest.h"
+    #import "UIImageView+WebCache.h"
+#endif
+
+#define iPhone5 ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(640, 1136), [[UIScreen mainScreen] currentMode].size) : NO)
+#define iOS7 ([[UIDevice currentDevice].systemVersion floatValue] >= 7.f ? YES : NO)
+#define iPhone6plus
+
+#define kScreenWidth   [[UIScreen mainScreen] bounds].size.width               //整个屏幕的宽度:320
+#define kScreenHeight  [[UIScreen mainScreen] bounds].size.height               //整个屏幕的高度:568
+#define kContentWidth  ([[UIScreen mainScreen] applicationFrame].size.width)    //可显示内容宽度:320
+#define kContentHeight ([[UIScreen mainScreen] applicationFrame].size.height)   //可显示内容高度:460或者548
+#define kNavContentHeight kContentHeight - kNavigationBarPortraitHeight         //navigation可显示内容高度:460或者548 - 44
+
+#define kTabBarHeight                 49.0f                                     //TabBar的高度
+#define kNavigationBarPortraitHeight  44.0f                                     //竖屏NavigationBar的高度
+
+#define VerifyCodeDigit   4       //验证码位数
+#define PasswordMinDigit  6       //密码最小位数
+#define PasswordMaxDigit  16      //密码最大位数
+#define MAXLONGLONG       9223372036854775807LL       //最大的int64
+//每次请求的条数
+#define HttpRequestCount  50
+#define UMengAppkey       @"53cf0a1b56240bd09a04f6a8"  //友盟Appkey
+
+#define CommunityCompany  @""
+
+//再次获取验证码间隔时间
+#define kGetVerifyCodeTime     120
+#define kResultGetVerifyCode   @"ResultGetVerifyCode"
+#define kChangeCommunity       @"SuccessChangeCommunity"
+#define kDownloadAvatar        @"SuccessDownloadAvatar"
+#define kUserLogout            @"UserLogout"
+#define BlurColor   [UIColor colorWithRed:1.0f green:1.0f blue:1.0f alpha:0.3f]
+#define NewBackgroundColor [UIColor whiteColor]
+
+ //外网测试服务器地址
+//#define kCommunityServer          @"http://115.29.192.170:8080/duoyi/"
+//#define kCommunityImageServer     @"http://115.29.192.170/"
+
+//训练测试
+//#define kCommunityServer          @"http://192.168.0.93:8080/duoyi/"
+//#define kCommunityImageServer     @"http://192.168.0.68/"
+
+
+//测试专员测试专用251
+
+//#define kCommunityServer          @"http://115.29.251.197:8080/duoyi/"
+//#define kCommunityImageServer     @"http://115.29.192.170/"
+
+//目前使用的正式服务器
+
+#define kCommunityServer          @"http://api.yicommunity.cn/duoyi/"
+#define kCommunityImageServer     @"http://image.yicommunity.cn/"
+
+//新的 正式服务 未启用
+
+//#define kCommunityServer          @"http://manager.ysq365.com/duoyi/"
+//#define kCommunityImageServer     @"http://image.ysq365.com/"
+
+//测试服务器40
+
+//#define kCommunityServer          @"http://192.168.0.40:81/duoyi/"
+//#define kCommunityImageServer     @"http://192.168.0.40/"
+
+#define RGBA(r,g,b,a)               [UIColor colorWithRed:(float)r/255.0f green:(float)g/255.0f blue:(float)b/255.0f alpha:a]
+//黄色button
+#define mmRGBA                     RGBA(255,192,0,1)
+
+//红button
+#define hongRGBA                     RGBA(252,190,125,1)
+//蓝button
+#define lanRGBA                     RGBA(115,206,231,1)
+//绿button
+#define lvRGBA                     RGBA(114,208,186,1)
+//钱button
+#define qianRGBA                     RGBA(249,148,171,1)
+
+//获取启动广告
+#define Getqidongguanggao        [NSString stringWithFormat:@"%@/service/getMQDIOS", kCommunityServer]
+
+//获取首页推荐广告的URL
+#define kGetHomeRecommendURL     [NSString stringWithFormat:@"%@service/getfrontinfo", kCommunityServer]
+//秒杀详情
+#define appSeckill     [NSString stringWithFormat:@"%@appSeckill/getSeckillDetail", kCommunityServer]
+//获取表扬管家
+#define kGetHPraiseURL     [NSString stringWithFormat:@"%@appPraiseCompany/getAdminList", kCommunityServer]
+//获取表扬管家
+#define kPraiseURL     [NSString stringWithFormat:@"%@appPraiseCompany/praise", kCommunityServer]
+//秒杀
+#define kill     [NSString stringWithFormat:@"%@appSeckill/kill", kCommunityServer]
+//是否交清15年物业费
+#define checkRoomFee     [NSString stringWithFormat:@"%@appSeckill/checkRoomFee", kCommunityServer]
+//是否本小区
+#define checkComm     [NSString stringWithFormat:@"%@appSeckill/checkComm", kCommunityServer]
+//检查更新
+#define kCheckUpdateURL          [NSString stringWithFormat:@"%@user/version", kCommunityServer]
+//注册时获取验证码URL
+#define kGetVerifyCodeURL        [NSString stringWithFormat:@"%@user/verify", kCommunityServer]
+//用户注册URL
+#define kUserGetyaoqingrenURL         [NSString stringWithFormat:@"%@user/registerCheck", kCommunityServer]
+
+//用户注册URL
+#define kUserRegisterURL         [NSString stringWithFormat:@"%@user/register", kCommunityServer]
+//用户登录URL
+#define kUserLoginURL            [NSString stringWithFormat:@"%@user/login", kCommunityServer]
+//更新profile URL
+#define kUpdateProfileURL        [NSString stringWithFormat:@"%@user/profile", kCommunityServer]
+//获取profileURL
+#define kGetProfileURL           [NSString stringWithFormat:@"%@user/getprofile", kCommunityServer]
+//找回密码时获取验证码URL
+#define kForgetPwdURL            [NSString stringWithFormat:@"%@user/forgetpw", kCommunityServer]
+//找回密码URL
+#define kChangeForgetPwdURL      [NSString stringWithFormat:@"%@user/changeforgetpw", kCommunityServer]
+//修改密码URL
+#define kChangePwdURL            [NSString stringWithFormat:@"%@user/changepassword", kCommunityServer]
+//获得开通城市列表URL
+#define kGetHotCitiesURL         [NSString stringWithFormat:@"%@user/gethotcities", kCommunityServer]
+//获得小区列表URL
+#define kGetCommunitysURL        [NSString stringWithFormat:@"%@user/findcommunity", kCommunityServer]
+//获得幢列表URL
+#define kGetBuildingsURL         [NSString stringWithFormat:@"%@user/getbuildings", kCommunityServer]
+//获得单元列表URL
+#define kGetUnitsURL             [NSString stringWithFormat:@"%@user/getunits", kCommunityServer]
+//获得房间列表URL
+#define kGetRoomsURL             [NSString stringWithFormat:@"%@user/getrooms", kCommunityServer]
+//获得商品详情URL
+#define KgetDetailGoods             [NSString stringWithFormat:@"%@appPurchase/getDetailsByGoodsId", kCommunityServer]
+//获得用户房间列表URL
+#define kGetUserRoomsURL         [NSString stringWithFormat:@"%@user/getmyrooms", kCommunityServer]
+//绑定房间URL
+#define kBindRoomURL             [NSString stringWithFormat:@"%@user/bindroom", kCommunityServer]
+//增加房间URL
+#define kAddRoomsURL             [NSString stringWithFormat:@"%@user/addmyroom", kCommunityServer]
+//获取所有列表
+#define KgetAllPerChace             [NSString stringWithFormat:@"%@appPurchase/getAllPrucahses", kCommunityServer]
+//获取订单返回更新订单状态
+#define KpayOk             [NSString stringWithFormat:@"%@pai/payOk", kCommunityServer]
+//新首页广告
+#define getMSYAdvertise             [NSString stringWithFormat:@"%@/service/getMSYAdvertise", kCommunityServer]
+
+//获得我的活动 列表
+#define getMyActivity             [NSString stringWithFormat:@"%@/appNewActivity/getMyActivity", kCommunityServer]
+
+//获得社区活动 列表
+#define getCommActivity             [NSString stringWithFormat:@"%@/appNewActivity/getCommActivity", kCommunityServer]
+//获得小区名字
+#define findCompany             [NSString stringWithFormat:@"%@/community/findCompany", kCommunityServer]
+
+//发布活动
+#define fabuhuodong             [NSString stringWithFormat:@"%@/appNewActivity/publish", kCommunityServer]
+//取消发布  getDetail2
+#define cancelPublish           [NSString stringWithFormat:@"%@/appNewActivity/cancelPublish", kCommunityServer]
+//编辑发布详情
+#define getDetail2             [NSString stringWithFormat:@"%@/appNewActivity/getDetail2", kCommunityServer]
+//修改发布   
+#define updateActivity        [NSString stringWithFormat:@"%@/NewAppActivity/updateActivity", kCommunityServer]
+
+//判断是否进入新社区活动
+#define getFlagCommActivity             [NSString stringWithFormat:@"%@/yellowpage/noticeIos", kCommunityServer]
+
+
+//社区或者业主活动详情
+#define NewActivityDetail             [NSString stringWithFormat:@"%@/appNewActivity/getDetail", kCommunityServer]
+//活动详情新开发   getFlagCommActivity
+#define Getxiangqing        [NSString stringWithFormat:@"%@/appNewActivity/getDetail2", kCommunityServer]
+//讨论点赞
+#define TalkDianzan        [NSString stringWithFormat:@"%@/NewAppActivity/addgood", kCommunityServer]
+//取消赞
+#define TalkDeleteDianzan        [NSString stringWithFormat:@"%@/NewAppActivity/deletegood", kCommunityServer]
+//讨论评论
+#define Talkaddcomment        [NSString stringWithFormat:@"%@/NewAppActivity/addcomment", kCommunityServer]
+//删除讨论
+#define Deletediscuss        [NSString stringWithFormat:@"%@/NewAppActivity/deletediscuss", kCommunityServer]
+//删除讨论评论
+#define DeleteComment        [NSString stringWithFormat:@"%@/NewAppActivity/deletecomment", kCommunityServer]
+
+//参加人数
+#define getUserByactivityId        [NSString stringWithFormat:@"%@/NewAppActivity/getUserByactivityId", kCommunityServer]
+//讨论分页
+#define getDiscussByActivityId        [NSString stringWithFormat:@"%@/NewAppActivity/getDiscussByActivityId", kCommunityServer]
+
+//分享点赞
+#define ShareDianzan        [NSString stringWithFormat:@"%@/NewAppActivity/addShareGood", kCommunityServer]
+//分享取消赞
+#define ShareDeleteDianzan        [NSString stringWithFormat:@"%@/NewAppActivity/deleteShareGood", kCommunityServer]
+//删除分享评论
+#define DeleteSharePing        [NSString stringWithFormat:@"%@/NewAppActivity/deleteShareComment", kCommunityServer]
+
+//分享评论
+#define Shareaddcomment        [NSString stringWithFormat:@"%@/NewAppActivity/addShareComment", kCommunityServer]
+//分享分页
+#define getShareByActivityId        [NSString stringWithFormat:@"%@/NewAppActivity/getShareListByactivityId", kCommunityServer]
+
+
+//分享
+#define ShareActivity            [NSString stringWithFormat:@"%@/NewAppActivity/addshare", kCommunityServer]
+
+//我要参加
+#define JoinActivity            [NSString stringWithFormat:@"%@/appNewActivity/join", kCommunityServer]
+//参与讨论
+#define AddDiscuss            [NSString stringWithFormat:@"%@/NewAppActivity/addDiscuss", kCommunityServer]
+
+//取消参加   cancel
+#define CancelJoinActivity            [NSString stringWithFormat:@"%@/appNewActivity/cancel", kCommunityServer]
+
+//获得秒杀结果
+#define getKillResult             [NSString stringWithFormat:@"%@/appSeckill/getResult", kCommunityServer]
+//获得秒杀结果
+#define getSecKillFiveGoods             [NSString stringWithFormat:@"%@/appSeckill/getSecKillFiveGoods", kCommunityServer]
+//判断是否可以缴费
+#define isFee             [NSString stringWithFormat:@"%@/user/isFee", kCommunityServer]
+//物业缴费 
+#define wuyeGetFee            [NSString stringWithFormat:@"%@/pai/getFee", kCommunityServer]
+//获得活动类型下拉框
+#define 获得活动类型下拉框             [NSString stringWithFormat:@"%@/pcNewActivity/getType", kCommunityServer]
+//获取积分列表
+#define getIntegralRecords             [NSString stringWithFormat:@"%@/PcIntegral/getIntegralRecords", kCommunityServer]
+
+//获取钱包列表
+#define getWalletRecords             [NSString stringWithFormat:@"%@/PcWallet/getWalletRecords", kCommunityServer]
+
+//获取投诉报修列表
+#define getcomplainsbyuserId             [NSString stringWithFormat:@"%@/complain/getcomplainsbyuserId", kCommunityServer]
+
+//判断是否可以投诉
+#define getCommunityCompalinTimeAndPhone             [NSString stringWithFormat:@"%@/complain/getCommunityCompalinTimeAndPhone", kCommunityServer]
+//删除房间URL
+#define kDeleteRoomsURL          [NSString stringWithFormat:@"%@user/deletemyroom", kCommunityServer]
+//获得小区信息URL
+#define kGetCommunityInfoURL     [NSString stringWithFormat:@"%@user/getcommunityinfo", kCommunityServer]
+//意见反馈URL
+#define kSuggestURL              [NSString stringWithFormat:@"%@user/suggest", kCommunityServer]
+//获得省
+#define sheng              [NSString stringWithFormat:@"%@userCenter/getProvince", kCommunityServer]
+//添加收货地址
+#define creatAddress     [NSString stringWithFormat:@"%@userCenter/createAddress", kCommunityServer]
+//判断马上抢
+#define maShangQiang     [NSString stringWithFormat:@"%@appPurchase/toPurchase", kCommunityServer]
+//获得管家信息
+#define getHousekeeper     [NSString stringWithFormat:@"%@userCenter/getHousekeeper", kCommunityServer]
+//管家投诉
+#define complains     [NSString stringWithFormat:@"%@userCenter/complains", kCommunityServer]
+//管家报修
+#define repair     [NSString stringWithFormat:@"%@userCenter/repair", kCommunityServer]
+//首次创建支付密码
+#define createPayWord     [NSString stringWithFormat:@"%@userCenter/createPayWord", kCommunityServer]
+//判断是否设置密码
+#define toCheckPassword     [NSString stringWithFormat:@"%@appPurchase/toCheckPassword", kCommunityServer]
+//确认付款
+#define toEnsurePay     [NSString stringWithFormat:@"%@appPurchase/toEnsurePay", kCommunityServer]
+//确认付尾款
+#define toEnsureWeiPay     [NSString stringWithFormat:@"%@appPurchase/payTheTail", kCommunityServer]
+//手机短信验证
+#define sendCode     [NSString stringWithFormat:@"%@userCenter/sendCode", kCommunityServer]
+//获取用户所有地址
+#define getuserAllAddress     [NSString stringWithFormat:@"%@userCenter/getAddress", kCommunityServer]
+//显示我的订单
+#define showDingDan     [NSString stringWithFormat:@"%@appPurchase/showAllOrderByUserId", kCommunityServer]
+//显示秒杀订单
+#define 秒杀     [NSString stringWithFormat:@"%@appSeckill/getOrder", kCommunityServer]
+
+//获得市
+#define shi              [NSString stringWithFormat:@"%@userCenter/getCity", kCommunityServer]
+//获得区
+#define qu              [NSString stringWithFormat:@"%@userCenter/getDistrict", kCommunityServer]
+//修改支付密码
+#define changePayWord        [NSString stringWithFormat:@"%@userCenter/changePayWord", kCommunityServer]
+//获得街道
+#define jiedao              [NSString stringWithFormat:@"%@userCenter/getSteet", kCommunityServer]
+//投诉URL
+#define kComplainURL             [NSString stringWithFormat:@"%@complain/complain", kCommunityServer]
+//报修URL
+#define kRepairURL               [NSString stringWithFormat:@"%@complain/repair", kCommunityServer]
+//多图投诉URL
+#define kMultiImageComplainURL   [NSString stringWithFormat:@"%@complain/multigraphcomplain", kCommunityServer]
+//多图报修URL
+#define kMultiImageRepairURL     [NSString stringWithFormat:@"%@complain/multigraphrepair", kCommunityServer]
+//多图预约报修URL
+#define multigraphAppointRepairURL     [NSString stringWithFormat:@"%@complain/multigraphAppointRepair", kCommunityServer]
+//投诉报修历史记录URL
+#define kTSBXHistoryURL          [NSString stringWithFormat:@"%@complain/getusercomplains", kCommunityServer]
+//任务详细流程URL
+#define kTaskFlowURL             [NSString stringWithFormat:@"%@complain/getprocesstasks", kCommunityServer]
+//任务评价URL
+#define kTaskCommentURL          [NSString stringWithFormat:@"%@complain/comment", kCommunityServer]
+//获取通知URL
+#define kGetNoticesURL           [NSString stringWithFormat:@"%@notice/getnotices", kCommunityServer]
+//获取财务报告URL
+#define kGetFinanceReportURL     [NSString stringWithFormat:@"%@notice/getfinancereport", kCommunityServer]
+//获取工作报告URL
+#define kGetWorkReportURL        [NSString stringWithFormat:@"%@notice/getworkreportshtml", kCommunityServer]
+//获取黄页URL
+#define kYellowPagesURL          [NSString stringWithFormat:@"%@yellowpage/getyellowpages", kCommunityServer]
+//获取房间信息URL
+#define kGetRoomInfoURL          [NSString stringWithFormat:@"%@community/getroominfo", kCommunityServer]
+//获取小区里停车位URL
+#define kGetParkingsURL          [NSString stringWithFormat:@"%@community/getparkings", kCommunityServer]
+//获取用户绑定房间的停车位URL
+#define kGetBindParkingsURL      [NSString stringWithFormat:@"%@user/getparkingsbyroomid", kCommunityServer]
+//增加用户在小区里停车位URL
+#define kAddUserParkingURL       [NSString stringWithFormat:@"%@user/addmyparking", kCommunityServer]
+//删除用户在小区里停车位URL
+#define kDeleteUserParkingURL    [NSString stringWithFormat:@"%@user/deletemyparking", kCommunityServer]
+//上传图片
+#define kUploadPicturesURL       [NSString stringWithFormat:@"%@notice/uploadpicture", kCommunityServer]
+//#define kUploadPicturesURL       [NSString stringWithFormat:@"%@notice/uploadpicture", kCommunityServer]
+//#define kUploadPicturesURL          @"http://192.168.1.109:8080/duoyi/notice/uploadpicture"
+
+//获取周边优惠URL
+#define kGetShopsURL             [NSString stringWithFormat:@"%@service/getshopsbytype", kCommunityServer]
+//获取社区活动URL
+#define kGetActivitiesURL        [NSString stringWithFormat:@"%@service/getactivities", kCommunityServer]
+//火车票URL
+#define kTrainTicketURL          @"http://touch.qunar.com/h5/train/?from=touchindex"
+//飞机票URL
+#define kAirplaneTicketURL       @"http://touch.qunar.com/h5/flight/"
+//手机充值URL
+#define kMobileRechargeURL       @"http://wvs.m.taobao.com/"
+//酒店旅游URL
+#define kHotelURL                @"http://touch.qunar.com/h5/hotel/"
+
+//获取实时天气
+#define kIntimeWeatherURL        @"http://www.weather.com.cn/data/sk/"
+
+//获取支付单号URL
+#define kGetOrderNumberURL       [NSString stringWithFormat:@"%@pai/order", kCommunityServer]
+//获取支付结果URL
+#define kGetPayResultURL         [NSString stringWithFormat:@"%@pai/result", kCommunityServer]
+//获取支付记录URL
+#define kGetPayLogURL            [NSString stringWithFormat:@"%@pai/logs", kCommunityServer]
+
+#define kAppItunesURL            @"itms-apps://itunes.apple.com/us/app/yi-she-qu/id841181474?ls=1&mt=8"

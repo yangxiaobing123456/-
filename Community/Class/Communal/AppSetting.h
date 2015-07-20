@@ -1,0 +1,64 @@
+//
+//  AppSetting.h
+//  Community
+//
+//  Created by SYZ on 13-12-3.
+//  Copyright (c) 2013年 Hua Men. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+#import "ImageDownloader.h"
+#import "PathUtil.h"
+#import "FileUtil.h"
+
+#define USER_ID                 @"userId"
+#define USER_PASSWORD           @"userPassword"
+#define COMMUNITY_ID            @"communityId"
+#define CITY_NAME               @"cityName"
+#define ALIPAY_ORDER_NUMBER     @"alipayOrderNumber"
+#define APP_VERSION             @"AppVersion"
+#define CHECK_UPDATE            @"CheckUpdate"
+#define NEWEST_NOTICE_ID        @"newestNoticeId"
+#define NEWEST_NOTICE_CHECKED   @"newestNoticeChecked"
+#define DEVICE_TOKEN            @"DeviceToken"
+#define ILLEGLE_USER_ID         0
+#define ILLEGLE_COMMUNITY_ID    0
+#define ILLEGLE_ORDER_NUMBER    0
+#define ILLEGLE_NOTICE_ID       0
+
+@interface AppSetting : NSObject
+
++ (long long)userId;
++ (void)saveUserId:(long long)userId;
++ (NSString *)userPassword;
++ (void)savePassowrd:(NSString *)password;
++ (long long)communityId;
++ (void)saveCommunityId:(long long)communityId;
++ (NSString *)locationCity;
++ (void)saveLoactionCity:(NSString *)city;
++ (NSString *)appVersion;
++ (void)saveAppVersion:(NSString *)version;
++ (BOOL)alertAppCheckUpdate;
++ (void)saveAppCheckUpdate:(BOOL)check;
++ (long long)newestNoticeId;
++ (void)saveNewestNoticeId:(long long)noticeId;
++ (BOOL)newestNoticeChecked;
++ (void)saveNewestNoticeChecked:(BOOL)check;
++ (void)deleteUserId;
++ (void)deletePassword;
++ (void)deleteCommunityId;
++ (void)userLogout;
++ (NSString *)deviceToken;
++ (void)saveDeviceToken:(NSString *)token;
++ (long long)alipayOrderNumber;
++ (void)saveAlipayOrderNumber:(long long)order;
++ (void)deleteAlipayOrderNumber;
+
++ (void)downloadAvatar;
++ (UIImage *)avatarImage;
++ (void)cleanCache;
+//存入NSUserDefaults
++(void)savrInfo:(NSString *)key andValue:(NSString *)valve;
+//取出NSUserDefaults
++(NSString *)getInfoValue:(NSString *)key;
+@end

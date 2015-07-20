@@ -1,0 +1,19 @@
+//
+//  BottomBtnView.h
+//  Community
+//
+//  Created by HuaMen on 15-2-12.
+//  Copyright (c) 2015年 Hua Men. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+@interface BottomBtnView : UIView
+@property (strong, nonatomic) IBOutlet UIButton *canjiaBtn;
+@property (strong, nonatomic) IBOutlet UIButton *fenxiangBtn;
+@property (strong, nonatomic) IBOutlet UIButton *taolunBtn;
+@property (strong, nonatomic) IBOutlet UIImageView *canjiaImage;
+@property (strong, nonatomic) IBOutlet UIImageView *fenxiangImage;
+@property (strong, nonatomic) IBOutlet UIImageView *taolunImage;
+
+@end

@@ -1,0 +1,17 @@
+//
+//  ActivityDetailViewController.h
+//  Community
+//
+//  Created by HuaMen on 14-12-29.
+//  Copyright (c) 2014年 Hua Men. All rights reserved.
+//
+
+#import "CommunityViewController.h"
+
+@interface ActivityDetailViewController : CommunityViewController
+@property(nonatomic,retain)NSString *idStr;
+@property (strong, nonatomic) IBOutlet UIScrollView *myScrollview;
+- (IBAction)telBtn:(id)sender;
+- (IBAction)detailBtnPush:(id)sender;
+
+@end

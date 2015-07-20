@@ -1,0 +1,62 @@
+//
+//  CommunityNavigationController.m
+//  Community
+//
+//  Created by SYZ on 13-11-17.
+//  Copyright (c) 2013年 Hua Men. All rights reserved.
+//
+
+#import "CommunityNavigationController.h"
+
+@interface CommunityNavigationController ()
+
+@end
+
+@implementation CommunityNavigationController
+
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        // Custom initialization
+    }
+    return self;
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+	
+    UIImage *navbarPortrait = [[UIImage imageNamed:@"ling_005"]
+                              resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, 0)];
+    [[UINavigationBar appearance] setBackgroundImage:navbarPortrait
+                                       forBarMetrics:UIBarMetricsDefault];
+    
+//    UIImage *navbarLandscape =[[UIImage imageNamed:@"navbar_32"]
+//                               resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, 0)];
+//    [[UINavigationBar appearance] setBackgroundImage:navbarLandscape
+//                                      forBarMetrics:UIBarMetricsLandscapePhone];
+    
+    [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+    [UIColor colorWithHexValue:0xFF302D2C], UITextAttributeTextColor,
+    [UIFont systemFontOfSize:20.0], UITextAttributeFont,
+    [UIColor clearColor], UITextAttributeTextShadowColor, nil]];
+    
+//    [[UINavigationBar appearance] setTintColor:[UIColor colorWithHexValue:0xFF302D2C]];
+//    [[UINavigationBar appearance] setBackIndicatorImage:[UIImage imageNamed:@"nav_back"]];
+//    [[UINavigationBar appearance] setBackIndicatorTransitionMaskImage:[UIImage imageNamed:@"nav_back"]];
+    
+    //设置透明navigationbar
+    if ([self.navigationController.navigationBar respondsToSelector:@selector(shadowImage)]) {
+        [self.navigationController.navigationBar setShadowImage:nil];
+    }
+    self.navigationController.navigationBar.translucent = YES;
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+@end

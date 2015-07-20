@@ -1,0 +1,227 @@
+//
+//  GetJoinNumViewController.m
+//  Community
+//
+//  Created by HuaMen on 15-2-27.
+//  Copyright (c) 2015年 Hua Men. All rights reserved.
+//
+
+#import "GetJoinNumViewController.h"
+#import "JoinTableViewCell.h"
+@interface GetJoinNumViewController ()
+
+@end
+
+@implementation GetJoinNumViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    moreBool = NO;
+    // Do any additional setup after loading the view.
+    self.title = @"参加的人";
+    [self addBarButtonItem];
+    myScrollview = [[UIScrollView alloc] initWithFrame:self.view.frame];
+    [myScrollview setContentSize:CGSizeMake(320, 1000)];
+    myScrollview.showsVerticalScrollIndicator = NO;
+    //    myScrollview.backgroundColor = [UIColor redColor];
+    [self.view addSubview:myScrollview];
+    
+    [self homedown];
+
+
+}
+#pragma mark-  BarButtonItem
+- (void)addBarButtonItem
+{
+    UIButton *leftBarBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [leftBarBtn setBackgroundImage:[UIImage imageNamed:@"nav_back.png"] forState:UIControlStateNormal];
+    leftBarBtn.frame=CGRectMake(0, 0, 12, 20);
+    leftBarBtn.tag = 101;
+    [leftBarBtn addTarget:self action:@selector(rightBarBtnSelect:) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *leftItem = [[UIBarButtonItem alloc] initWithCustomView:leftBarBtn];
+    self.navigationItem.leftBarButtonItem = leftItem;
+}
+- (void)rightBarBtnSelect:(UIButton *)btn
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+#pragma mark request methods
+-(void)homedown{
+    NSDictionary *user = [[NSDictionary alloc]initWithObjectsAndKeys:self.activityId,@"activityId", nil];
+    if ([NSJSONSerialization isValidJSONObject:user])
+    {
+        NSError *error;
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:user options:NSJSONWritingPrettyPrinted error: &error];
+        NSMutableData *tempJsonData = [NSMutableData dataWithData:jsonData];
+        NSLog(@"Register JSON:%@",[[NSString alloc] initWithData:tempJsonData encoding:NSUTF8StringEncoding]);
+        
+        NSURL *url = [NSURL URLWithString:getUserByactivityId];
+        
+        ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+        [request addRequestHeader:@"Content-Type" value:@"application/json; encoding=utf-8"];
+        [request addRequestHeader:@"Accept" value:@"application/json"];
+        NSString *str=[NSString stringWithFormat:@"Basic %@",[[[NSString stringWithFormat:@"u_%lld:%@",[AppSetting userId], [AppSetting userPassword]] dataUsingEncoding:NSUTF8StringEncoding] base64Encoding]];
+        NSLog(@"%lld",[AppSetting userId]);
+        [request addRequestHeader:@"Authorization" value:str];
+        [request setRequestMethod:@"POST"];
+        [request setPostBody:tempJsonData];
+        
+        request.tag=100;
+        request.delegate=self;
+        [request startAsynchronous];
+    }
+    
+}
+
+-(void)requestFailed:(ASIHTTPRequest *)request{
+    [[CommunityIndicator sharedInstance] showNoteWithTextAutoHide:@"网络不给力啊"];
+    
+}
+-(void)requestFinished:(ASIHTTPRequest *)request{
+    if (request.tag==100) {
+        NSLog(@"OK!!");
+        NSLog(@"str==%@",request.responseString);
+        NSDictionary *dic=[request.responseData objectFromJSONData];
+        NSLog(@"%@",dic);
+        NSString *result=[dic objectForKey:@"result"];
+        if ([result isEqualToString:@"1"])
+        {
+            dataListArray = [[dic objectForKey:@"pageVo"] objectForKey:@"dataList"];
+            peopleTable = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, 320, dataListArray.count*80) style:UITableViewStylePlain];
+            //    peopleTable.tag = 100;
+            peopleTable.delegate = self;
+            peopleTable.dataSource = self;
+            peopleTable.scrollEnabled = NO;
+      //屏幕适配 目前所有机型
+            myScrollview.contentSize = CGSizeMake(320, dataListArray.count*80+31);
+            if (kScreenHeight<481 && dataListArray.count*80<451) {
+                myScrollview.contentSize = CGSizeMake(320, 481);
+            }else if (kScreenHeight>481&&kScreenHeight<569&&dataListArray.count*80<539)
+            {
+                myScrollview.contentSize = CGSizeMake(320, 569);
+
+            }else if (kScreenHeight>569&&kScreenHeight<961&&dataListArray.count*80<931)
+            {
+                myScrollview.contentSize = CGSizeMake(320, 961);
+                
+            }
+
+            [myScrollview addSubview:peopleTable];
+
+            UIButton *buttonMore = [UIButton buttonWithType:UIButtonTypeCustom];
+//            [FabuBtn setBackgroundImage:[UIImage imageNamed:@"凸起按钮"] forState:UIControlStateNormal];
+            [buttonMore setTitle:@"更 多" forState:UIControlStateNormal];
+            buttonMore.frame=CGRectMake(0, peopleTable.frame.size.height, 320, 30);
+            [buttonMore addTarget:self action:@selector(btnClick) forControlEvents:UIControlEventTouchUpInside];
+            buttonMore.backgroundColor = [UIColor lightGrayColor];
+            [buttonMore.titleLabel setFont:[UIFont systemFontOfSize:15.0f]];
+            [buttonMore setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+            [myScrollview addSubview:buttonMore];
+
+            if (moreBool==YES) {
+                [buttonMore setTitle:@"已全部加载" forState:UIControlStateNormal];
+
+            }
+//            [peopleTable reloadData];
+           }
+      }
+}
+
+- (void)btnClick
+{
+    NSLog(@"更多");
+    moreBool = YES;
+    [self homedown];
+}
+#pragma mark-tableViewDelegate
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return dataListArray.count;
+}
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *cellIdentifier = @"cellIdentiifer";
+    JoinTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    if (!cell)
+    {
+        NSArray *array = [[NSBundle mainBundle] loadNibNamed:@"JoinTableViewCell" owner:nil options:nil];
+        
+        cell = (JoinTableViewCell *)[array objectAtIndex:0];
+    }
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
+    NSDictionary *joinDic = [dataListArray objectAtIndex:indexPath.row];
+    NSString *ImageStr=[joinDic objectForKey:@"userPic"];
+    NSURL *imageUrl=[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",kCommunityImageServer,ImageStr]];
+    [cell.userPic setImageWithURL:imageUrl placeholderImage:[UIImage imageNamed:@"logo_132"]];
+    cell.level.text = [NSString stringWithFormat:@"%@",[joinDic objectForKey:@"name"]];
+    //开始
+    CGSize titleSize = [cell.level.text sizeWithFont:[UIFont systemFontOfSize:15.0] constrainedToSize:CGSizeMake(130, 20)];
+    UIImageView *sexbg  = [[UIImageView alloc] initWithFrame:CGRectMake(titleSize.width+5, 4, 27, 12)];
+    [cell.sexView addSubview:sexbg];
+    UIImageView *sexArrow  = [[UIImageView alloc] initWithFrame:CGRectMake(sexbg.frame.origin.x+3, 7, 6, 6)];
+    [cell.sexView addSubview:sexArrow];
+    UILabel *ageLabel = [[UILabel alloc] initWithFrame:CGRectMake(sexArrow.frame.origin.x +sexArrow.frame.size.width, 4, 18, 12)];
+    ageLabel.textColor = [UIColor whiteColor];
+    ageLabel.textAlignment = NSTextAlignmentCenter;
+    ageLabel.font = [UIFont systemFontOfSize:10.0];
+    [cell.sexView addSubview:ageLabel];
+    ageLabel.text = [joinDic objectForKey:@"age"];
+    
+    if ([[joinDic objectForKey:@"sex"] isEqualToString:@"0"]) {
+        sexbg.image = [UIImage imageNamed:@"女.png"];
+        sexArrow.image = [UIImage imageNamed:@"女箭头.png"];
+        
+    }else
+    {
+        sexbg.image = [UIImage imageNamed:@"男.png"];
+        sexArrow.image = [UIImage imageNamed:@"男箭头.png"];
+    }
+    //结束
+
+    cell.time.text = [NSString stringWithFormat:@"%@",[joinDic objectForKey:@"time"]];
+    cell.actNum.text = [NSString stringWithFormat:@"已参加%@次活动",[joinDic objectForKey:@"actNum"]];
+    
+    
+    if ([self.displayPhone isEqualToString:@"显示"])
+    {
+        cell.actNum.hidden = YES;
+        UIImageView *phoneImag = [[UIImageView alloc]initWithFrame:CGRectMake(75, 32, 20, 20)];
+        phoneImag.image = [UIImage imageNamed:@"电话_.png"];
+        UILabel *phoneLabel = [[UILabel alloc] initWithFrame:CGRectMake(95, 32, 140, 20)];
+        phoneLabel.textColor = [UIColor blackColor];
+        phoneLabel.font = [UIFont systemFontOfSize:15.0f];
+        phoneLabel.text = [joinDic objectForKey:@"userPhone"];
+        [cell.contentView addSubview:phoneImag];
+        [cell.contentView addSubview:phoneLabel];
+    }
+    
+    
+    cell.content.text = [NSString stringWithFormat:@"%@",[joinDic objectForKey:@"content"]];
+    return cell;
+ 
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 80;
+}
+
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end

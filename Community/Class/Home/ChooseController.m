@@ -1,0 +1,196 @@
+//
+//  ChooseController.m
+//  Community
+//
+//  Created by HuaMen on 15-2-13.
+//  Copyright (c) 2015年 Hua Men. All rights reserved.
+//
+
+#import "ChooseController.h"
+
+@interface ChooseController ()
+{
+    int timeNum;
+    int typeNum;
+}
+
+@end
+
+@implementation ChooseController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.title = @"筛选";
+    
+    // Do any additional setup after loading the view.
+    shaixuanScrollView = [[UIScrollView alloc] initWithFrame:self.view.frame];
+    if (self.view.frame.size.height<481) {
+        shaixuanScrollView.contentSize = CGSizeMake(320, 568);
+    }
+    else
+    {
+        shaixuanScrollView.contentSize = CGSizeMake(320, self.view.frame.size.height);
+  
+    }
+    [self.view addSubview:shaixuanScrollView];
+    
+    [self adddtypeBtnClick];
+    [self addBarButtonItem];
+}
+#pragma mark-  BarButtonItem
+- (void)addBarButtonItem
+{
+    UIButton *leftBarBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [leftBarBtn setBackgroundImage:[UIImage imageNamed:@"nav_back.png"] forState:UIControlStateNormal];
+    leftBarBtn.frame=CGRectMake(0, 0, 12, 20);
+    leftBarBtn.tag = 101;
+    [leftBarBtn addTarget:self action:@selector(rightBarBtnSelect:) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *leftItem = [[UIBarButtonItem alloc] initWithCustomView:leftBarBtn];
+    self.navigationItem.leftBarButtonItem = leftItem;
+}
+- (void)rightBarBtnSelect:(UIButton *)btn
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)adddtypeBtnClick
+{
+    UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, 5, 80, 45)];
+    timeLabel.text = @"举办时间";
+    timeLabel.textColor = [UIColor blackColor];
+    timeLabel.textAlignment = NSTextAlignmentCenter;
+    timeLabel.font = [UIFont systemFontOfSize:18.0];
+    [shaixuanScrollView addSubview:timeLabel];
+    
+    NSArray *timeArray = [NSArray arrayWithObjects:@"不限",@"今天",@"明天",@"周末", nil];
+    for (int j=0; j<4; j++) {
+        CGFloat interX = (320 - 78*4)/5;
+        UIButton *timeBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        timeBtn.frame = CGRectMake(interX + (78 + interX)*j, 50, 78, 45);
+        [timeBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        [timeBtn.titleLabel setFont:[UIFont systemFontOfSize:16.0f]];
+        timeBtn.backgroundColor = [UIColor whiteColor];
+        timeBtn.tag = j+100;
+        [timeBtn setTitle:[NSString stringWithFormat:@"%@",[timeArray objectAtIndex:j]] forState:UIControlStateNormal];
+        [timeBtn addTarget:self action:@selector(timeBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        [shaixuanScrollView addSubview:timeBtn];
+        
+    }
+    
+
+    
+    UILabel *typeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 95, 125, 45)];
+    typeLabel.text = @"活动类型";
+    typeLabel.font = [UIFont systemFontOfSize:18.0];
+    [shaixuanScrollView addSubview:typeLabel];
+
+    
+    NSArray *imageNameArray = [NSArray arrayWithObjects:@"全部",@"拼车",@"拼旅游",@"拼k歌",@"拼商品",@"拼健身",@"拼广场舞",@"拼宠物",@"拼球类",@"拼跑步",@"拼棋牌",@"拼吃货",@"跳蚤市场",@"其他", nil];
+    CGFloat btnW=78;
+    CGFloat btnH=45;
+    
+    for (int i=0; i<14; i++)
+    {
+        CGFloat btnIntervalX = (320-78*4)/5;
+        CGFloat btnIntervalY = (320-78*4)/5;
+        CGFloat fX = btnIntervalX + (btnW + btnIntervalX)*(i%4);
+        CGFloat fY = btnIntervalY+ (btnH + btnIntervalY)*(i/4)+140;
+        
+        UIButton *littleTypeBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [littleTypeBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        littleTypeBtn.backgroundColor = [UIColor whiteColor];
+
+        littleTypeBtn.frame = CGRectMake(fX, fY, 78, 45);
+        [littleTypeBtn setTitle:[NSString stringWithFormat:@"%@",[imageNameArray objectAtIndex:i]] forState:UIControlStateNormal];
+        //tag值最好不要从0开始设置，因为相同tag值的view太多 可能会冲突导致crash
+        littleTypeBtn.tag= i + 10;
+        [littleTypeBtn.titleLabel setFont:[UIFont systemFontOfSize:16.0f]];
+        [littleTypeBtn addTarget:self action:@selector(littleTypeBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        [shaixuanScrollView addSubview:littleTypeBtn];
+        
+    }
+    
+    UIButton *finishiBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [finishiBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    finishiBtn.backgroundColor = mmRGBA;
+    finishiBtn.frame = CGRectMake(5, 400, 310, 45);
+    [finishiBtn setTitle:@"完 成" forState:UIControlStateNormal];
+    [finishiBtn addTarget:self action:@selector(finishiBtn:) forControlEvents:UIControlEventTouchUpInside];
+
+    [shaixuanScrollView addSubview:finishiBtn];
+    
+}
+
+- (void)timeBtnClick:(UIButton *)tBtn
+{
+ 
+    timeNum = tBtn.tag-100;
+    if (![tBtn isSelected]) {
+        for (int i=100; i<104; i++) {
+            if (i==tBtn.tag) {
+                [tBtn setSelected:YES];
+                [tBtn setBackgroundColor:[UIColor grayColor]];
+                continue;
+            }
+            UIButton *button=(UIButton *)[self.view viewWithTag:i];
+            if ([button isSelected]) {
+                [button setSelected:NO];
+                [button setBackgroundColor:[UIColor whiteColor]];
+            }
+        }
+    }
+    
+}
+- (void)littleTypeBtnClick:(UIButton *)TBtn
+{
+    typeNum = TBtn.tag-10;
+    if (![TBtn isSelected]) {
+        for (int i=10; i<24; i++) {
+            if (i==TBtn.tag) {
+                [TBtn setSelected:YES];
+                [TBtn setBackgroundColor:[UIColor grayColor]];
+                continue;
+            }
+            UIButton *button=(UIButton *)[self.view viewWithTag:i];
+            if ([button isSelected]) {
+                [button setSelected:NO];
+                [button setBackgroundColor:[UIColor whiteColor]];
+            }
+        }
+    }
+
+}
+- (void)finishiBtn:(UIButton *)tBtn
+{
+    NSString *typeNumStr = [NSString stringWithFormat:@"%d",typeNum];
+    if (typeNum==0) {
+        typeNumStr=@"";
+    }
+
+    NSString *timeTypeStr = [NSString stringWithFormat:@"%d",timeNum];
+    if (timeNum==0) {
+        timeTypeStr=@"";
+    }
+
+    NSDictionary *dic  = [[NSDictionary alloc] initWithObjectsAndKeys:timeTypeStr,@"timeType",typeNumStr,@"actyType", nil];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"actyTypeNotification" object:dic];
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end

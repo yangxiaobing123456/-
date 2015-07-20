@@ -1,0 +1,194 @@
+//
+//  CommunitySplashController.m
+//  Community
+//
+//  Created by SYZ on 13-12-9.
+//  Copyright (c) 2013年 Hua Men. All rights reserved.
+//
+
+#import "CommunitySplashController.h"
+
+@interface CommunitySplashController ()
+
+@end
+
+@implementation CommunitySplashController
+
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        
+    }
+    return self;
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+	
+    adView = [[UIImageView alloc] initWithFrame:self.view.bounds];
+    [self.view addSubview:adView];
+    
+    backgroundView = [[UIImageView alloc] initWithFrame:self.view.bounds];
+    if (iPhone5) {
+        backgroundView.image = [UIImage imageNamed:@"maomao.png"];
+    } else {
+        backgroundView.image = [UIImage imageNamed:@"maomao.png"];
+    }
+    [self.view addSubview:backgroundView];
+    
+    
+    contentView = [[UIView alloc] initWithFrame:CGRectMake(116.0f, 35.0f, 93.0f, 92.0f)];
+    contentView.backgroundColor = [UIColor clearColor];
+    [self.view addSubview:contentView];
+    
+    logoPart1 = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 5.0f, 39.0f, 51.0f)];
+    logoPart1.image = [UIImage imageNamed:@"logo_part_1"];
+    [contentView addSubview:logoPart1];
+    
+    logoPart2 = [[UIImageView alloc] initWithFrame:CGRectMake(38.0f, 0.0f, 51.0f, 39.0f)];
+    logoPart2.image = [UIImage imageNamed:@"logo_part_2"];
+    [contentView addSubview:logoPart2];
+    
+    logoPart3 = [[UIImageView alloc] initWithFrame:CGRectMake(5.0f, 53.0f, 51.0f, 39.0f)];
+    logoPart3.image = [UIImage imageNamed:@"logo_part_3"];
+    [contentView addSubview:logoPart3];
+    
+    logoPart4 = [[UIImageView alloc] initWithFrame:CGRectMake(54.0f, 36.0f, 39.0f, 51.0f)];
+    logoPart4.image = [UIImage imageNamed:@"logo_part_4"];
+    [contentView addSubview:logoPart4];
+
+    UIBezierPath *onePath = [UIBezierPath bezierPath];
+    [onePath moveToPoint:CGPointMake(-116.0f, -35.0f)];
+    [onePath addQuadCurveToPoint:CGPointMake(19.5f, 30.5f) controlPoint:CGPointMake(-90.0f, -10.0f)];
+    
+    //关键帧动画（位置）
+    CAKeyframeAnimation *oneAnim = [CAKeyframeAnimation animationWithKeyPath:@"position"];
+    oneAnim.path = onePath.CGPath;
+    oneAnim.delegate = self;
+    oneAnim.duration = 0.5f;
+    oneAnim.removedOnCompletion = YES;
+    
+    [logoPart1.layer addAnimation:oneAnim forKey:@"one"];
+    
+    UIBezierPath *twoPath = [UIBezierPath bezierPath];
+    [twoPath moveToPoint:CGPointMake(364.0f, -35.0f)];
+    [twoPath addQuadCurveToPoint:CGPointMake(63.5f, 19.5f) controlPoint:CGPointMake(250.0f, -20.0f)];
+    
+    CAKeyframeAnimation *twoAnim = [CAKeyframeAnimation animationWithKeyPath:@"position"];
+    twoAnim.path = twoPath.CGPath;
+    twoAnim.delegate = self;
+    twoAnim.duration = 0.5f;
+    twoAnim.removedOnCompletion = YES;
+    
+    [logoPart2.layer addAnimation:twoAnim forKey:@"two"];
+    
+    UIBezierPath *threePath = [UIBezierPath bezierPath];
+    [threePath moveToPoint:CGPointMake(-116.0f, 445.0f)];
+    [threePath addQuadCurveToPoint:CGPointMake(30.5f, 72.5f) controlPoint:CGPointMake(-70.0f, 320.0f)];
+    
+    CAKeyframeAnimation *threeAnim = [CAKeyframeAnimation animationWithKeyPath:@"position"];
+    threeAnim.path = threePath.CGPath;
+    threeAnim.delegate = self;
+    threeAnim.duration = 0.5f;
+    threeAnim.removedOnCompletion = YES;
+    
+    [logoPart3.layer addAnimation:threeAnim forKey:@"three"];
+    
+    UIBezierPath *fourPath = [UIBezierPath bezierPath];
+    [fourPath moveToPoint:CGPointMake(364.0f, 445.0f)];
+    [fourPath addQuadCurveToPoint:CGPointMake(73.5f, 61.5f) controlPoint:CGPointMake(100.0f, 230.0f)];
+    
+    CAKeyframeAnimation *fourAnim = [CAKeyframeAnimation animationWithKeyPath:@"position"];
+    fourAnim.path = fourPath.CGPath;
+    fourAnim.delegate = self;
+    fourAnim.duration = 0.5f;
+    fourAnim.removedOnCompletion = YES;
+    
+    [logoPart4.layer addAnimation:fourAnim forKey:@"four"];
+    
+    [self getUserInfo];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    
+    [[UIApplication sharedApplication] setStatusBarHidden:NO];
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackTranslucent];
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+- (void)getUserInfo
+{
+    if ([AppSetting userId] == ILLEGLE_USER_ID) {
+        return;
+    }
+    UserInfo *user = [[CommunityDbManager sharedInstance] queryUserInfo:[AppSetting userId]];
+    NSDictionary *dict = [NSDictionary dictionaryWithObject:[NSNumber numberWithLongLong:user.updateTime] forKey:@"updateTime"];
+    [[HttpClientManager sharedInstance] getProfileWithDict:dict complete:nil];
+}
+
+//读取广告
+- (BOOL)readAd
+{
+    adView.image = [UIImage imageNamed:iPhone5 ? @"guide_iphone5-8":@"guide_iphone4-8"];
+
+//    adView1.image = [UIImage imageNamed:iPhone5 ? @"guide_iphone59.png":@"guide_iphone49.png"];
+
+    
+    return YES;
+}
+
+- (void)enterToMainPage
+{
+    [contentView.layer removeAllAnimations];
+    CommunityRootController *rootController = [CommunityRootController new];
+    [self presentViewController:rootController animated:NO completion:nil];
+}
+
+#pragma mark CAAnimationDelegate methods
+- (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag
+{
+    if (flag) {
+        CABasicAnimation *fullRotation = [CABasicAnimation animationWithKeyPath:@"transform.rotation"];
+        fullRotation.delegate = self;
+        fullRotation.fromValue = [NSNumber numberWithFloat:0];
+        fullRotation.toValue = [NSNumber numberWithFloat:MAXFLOAT];
+        fullRotation.duration = MAXFLOAT * 0.15;
+        fullRotation.removedOnCompletion = YES;
+        [contentView.layer addAnimation:fullRotation forKey:@"top"];
+        
+        float delay = 2.0f;
+        if ([self readAd]) {
+            delay = 4.0f;
+            [UIView animateWithDuration:0.3f
+                                  delay:1.5f
+                                options:UIViewAnimationOptionCurveEaseIn
+                             animations:^{
+                                 backgroundView.alpha = 0.0f;
+                                 contentView.alpha = 0.0f;
+                             }
+                             completion:^(BOOL finished) {
+                                 if (finished) {
+                                     [self performSelector:@selector(enterToMainPage) withObject:nil afterDelay:delay];
+                                 }
+                             }];
+        } else {
+            [self performSelector:@selector(enterToMainPage) withObject:nil afterDelay:delay];
+        }
+    }
+}
+
+@end

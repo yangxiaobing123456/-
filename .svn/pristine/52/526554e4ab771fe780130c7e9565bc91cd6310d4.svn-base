@@ -1,0 +1,85 @@
+//
+//  PinglunCell.m
+//  Community
+//
+//  Created by HuaMen on 15-2-13.
+//  Copyright (c) 2015年 Hua Men. All rights reserved.
+//
+
+#import "PinglunCell.h"
+
+@implementation PinglunCell
+
+
+- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+{
+    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+    if (self) {
+        //头像
+        _userPic = [[UIImageView alloc]initWithFrame:CGRectMake(5, 5, 60, 60)];
+        _userPic.image = [UIImage imageNamed:@"logo_132.png"];
+        [self.contentView addSubview:_userPic];
+        
+        //名字
+        _level=[[UILabel alloc] initWithFrame:CGRectMake(89, 6, 130, 20)];
+        _level.backgroundColor = [UIColor clearColor];
+        _level.font = [UIFont systemFontOfSize:15];
+        [self.contentView addSubview:_level];
+        
+        _sexView = [[UIView alloc] initWithFrame:CGRectMake(_level.frame.origin.x, _level.frame.origin.y, 160, 20)];
+        _sexView.backgroundColor = [UIColor clearColor];
+        [self.contentView addSubview:_sexView];
+        
+        _time=[[UILabel alloc]initWithFrame:CGRectMake(225, 6, 87, 20)];
+        _time.backgroundColor = [UIColor clearColor];
+        _time.font = [UIFont systemFontOfSize:13];
+        [self.contentView addSubview:_time];
+        
+        //内容
+        _content= [[UILabel alloc]initWithFrame:CGRectMake(89, 46, 154, 20)];
+        _content.numberOfLines = 0;
+        _content.font = [UIFont systemFontOfSize:15.0f];
+        _content.backgroundColor  = [UIColor clearColor];
+        [self.contentView addSubview:_content];
+        
+        _deleteBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        _deleteBtn.frame = CGRectMake(265, _content.frame.origin.y-30, 64, 47);
+//        _deleteBtn.backgroundColor = [UIColor redColor];
+//        [_deleteBtn setBackgroundImage:[UIImage imageNamed:@"rubbishbox.png"] forState:UIControlStateNormal];
+        _deletImage = [[UIImageView alloc] initWithFrame:CGRectMake(289, _content.frame.origin.y-15, 14, 16)];
+        _deletImage.image = [UIImage imageNamed:@"rubbishbox.png"];
+        [self.contentView addSubview:_deletImage];
+
+        [self.contentView addSubview:_deleteBtn];
+        
+        _pinglunBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        _pinglunBtn.frame = CGRectMake(265, _content.frame.size.height+35, 49, 45);
+//        _pinglunBtn.backgroundColor = [UIColor redColor];
+        _pingImage = [[UIImageView alloc] init];
+        _pingImage.frame = CGRectMake(285, _content.frame.size.height+55, 19, 15);
+        _pingImage.image = [UIImage imageNamed:@"rightPinglun.png"];
+        [self.contentView addSubview:_pingImage];
+
+        [self.contentView addSubview:_pinglunBtn];
+        
+        //分割线
+        _imageLine = [[UIImageView alloc] init];
+        _imageLine.frame = CGRectMake(0, _content.frame.size.height+69.5, 320, 0.5);
+        _imageLine.backgroundColor = [UIColor lightGrayColor];
+        [self.contentView addSubview:_imageLine];
+        
+    }
+    return self;
+}
+
+- (void)awakeFromNib {
+    // Initialization code
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+    [super setSelected:selected animated:animated];
+
+    // Configure the view for the selected state
+}
+
+@end

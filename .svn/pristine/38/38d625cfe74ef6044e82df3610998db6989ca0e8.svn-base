@@ -1,0 +1,13 @@
+//
+//  MyActivityViewController.h
+//  Community
+//
+//  Created by HuaMen on 15-3-2.
+//  Copyright (c) 2015年 Hua Men. All rights reserved.
+//
+
+#import "CommunityViewController.h"
+
+@interface MyActivityViewController : CommunityViewController
+
+@end

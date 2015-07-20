@@ -1,0 +1,56 @@
+//
+//  RegisterView.h
+//  Community
+//
+//  Created by SYZ on 13-11-17.
+//  Copyright (c) 2013年 Hua Men. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+//输入手机号和验证码界面
+
+@protocol GetVerifyCodeViewDelegate <NSObject>
+
+- (void)didGetVerifyCodeWithPhoneNumber:(NSString*)phone;
+
+@end
+
+@interface GetVerifyCodeView : UIView <UITextFieldDelegate>
+{
+    UITextField *phoneField;
+    UIButton *getVerifyCodeButton;
+    
+    NSTimer *timer;
+    int time;
+}
+
+@property (nonatomic, weak) id<GetVerifyCodeViewDelegate> delegate;
+- (void)stopTimer;
+
+@end
+
+//输入密码和确认密码界面
+
+@protocol ConfirmPasswordViewDelegate <NSObject>
+
+- (void)didRegisterWithPassword:(NSString*)password verifyCode:(NSString*)code phone:(NSString *)phone invite_name:(NSString *)invite_name invite_number:(NSString *)invite_number;
+
+@end
+
+@interface ConfirmPasswordView : UIView <UITextFieldDelegate>
+{
+    UITextField *phoneField;
+    UITextField *verifyCodeField;
+    UITextField *passwordField;
+    UITextField *repeatPwdField;
+    UITextField *yaoqingrenField;
+    UITextField *yaoqingrenPhoneField;
+    UIButton *confirmButton;
+    UIButton *getVerifyCodeButton;
+    
+}
+
+@property (nonatomic, weak) id<ConfirmPasswordViewDelegate> delegate;
+
+@end
